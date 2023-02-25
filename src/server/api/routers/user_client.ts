@@ -6,7 +6,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
-export const deviceClientRouter = createTRPCRouter({
+export const userClientRouter = createTRPCRouter({
 //   post: publicProcedure
 //     .input(z.object({ id: z.string(), posts: z.array(z.object({
 //       // datetime: z.date(),
@@ -44,13 +44,13 @@ export const deviceClientRouter = createTRPCRouter({
 //       return "success"
 //     }),
 
-//   hello: publicProcedure
-//     .input(z.object({ text: z.string() }))
-//     .query(({ input }) => {
-//       return {
-//         greeting: `Hello ${input.text}`,
-//       };
-//     }),
+  hello: publicProcedure
+    .input(z.object({ text: z.string() }))
+    .query(({ input }) => {
+      return {
+        greeting: `Hello ${input.text}`,
+      };
+    }),
 
   // getAll: publicProcedure.query(({ ctx }) => {
   //   return ctx.prisma.example.findMany();

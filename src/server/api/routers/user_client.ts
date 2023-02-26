@@ -6,57 +6,83 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
+const MacAddressType = z.string().regex(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/);
+
 export const userClientRouter = createTRPCRouter({
-//   post: publicProcedure
-//     .input(z.object({ id: z.string(), posts: z.array(z.object({
-//       // datetime: z.date(),
-//       datetime: z.string(),
-//       data: z.object({
-//         air_quality: z.optional(z.number()),
-//         co2: z.optional(z.number()),
-//         co: z.optional(z.number()),
-//         temperature: z.optional(z.number()),
-//         humidity: z.optional(z.number()),
-//         vtol: z.optional(z.number()),
-//       })
-//     }))}))
-//     .query(async ({ input, ctx }) => {
-//       let device = await ctx.prisma.device.findUnique({
-//         where: {
-//           id: input.id
-//         }
-//       })
+    registerDevice: protectedProcedure
+        .input(z.object({ mac_addr: MacAddressType, account: z.string() }))
+        .query(({ input, ctx }) => {
+            ctx.prisma.device.create({
+                data: {
+                    id: input.mac_addr,
+                    accountId: input.account,
+                }
+            })
+            return "device added"
+        }),
+    nameDevice: protectedProcedure
+        .input(z.object({ id: MacAddressType, name: z.string() }))
+        .query(async ({ input, ctx }) => {
+            await ctx.prisma.device.update({
+                where: {
+                    id: input.id,
+                },
+                data: {
+                    name: input.name
+                }
+            })
+            return "device renamed"
+        }),
+    deleteDevice: protectedProcedure
+        .input(z.object({ id: MacAddressType }))
+        .query(async ({ input, ctx }) => {
+            await ctx.prisma.device.delete({
+                where: {
+                    id: input.id
+                }
+            })
+            return "device deleted"
+        }),
+    transferDevice: protectedProcedure
+        .input(z.object({ id: MacAddressType, newAccountId: z.string() }))
+        .query(async ({ input, ctx }) => {
+            let newAccount = await ctx.prisma.account.findUnique({
+                where: {
+                    id: input.newAccountId
+                }
+            })
 
-//       if (!device) {
-//         return "device not registered"
-//       }
+            if (!newAccount) {
+                return "account does not exist"
+            }
 
-//       let logs = input.posts.map(post => ({
-//         deviceId: input.id,
-//         datetime: post.datetime,
-//         data: post.data,
-//       }))
-
-//       ctx.prisma.log.createMany({
-//         data: logs
-//       })
-
-//       return "success"
-//     }),
-
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
-  // getAll: publicProcedure.query(({ ctx }) => {
-  //   return ctx.prisma.example.findMany();
-  // }),
-
-//   getSecretMessage: protectedProcedure.query(() => {
-//     return "you can now see this secret message!";
-//   }),
+            await ctx.prisma.device.update({
+                where: {
+                    id: input.id
+                },
+                data: {
+                    accountId: input.newAccountId
+                }
+            })
+            return "device transferred"
+        }),
+    deleteDeviceLogs: protectedProcedure
+        .input(z.object({ deviceId: MacAddressType, datetimeParams: z.any(), dataParams: z.any() }))
+        .query(async ({ input, ctx }) => {
+            const { count } = await ctx.prisma.log.deleteMany({
+                where: {
+                    deviceId: input.deviceId,
+                    datetime: input.datetimeParams,
+                    data: input.dataParams,
+                }
+            })
+            return `${count} logs deleted`
+        }),
+    hello: publicProcedure
+        .input(z.object({ text: z.string() }))
+        .query(({ input }) => {
+            return {
+                greeting: `Hello ${input.text}`,
+            };
+        }),
 });

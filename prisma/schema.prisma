@@ -69,7 +69,7 @@ model VerificationToken {
 
 // stuff for devices
 model Device {
-    id        String   @id @default(cuid())
+    id        String   @id
     name      String?
     logs      Log[]
     Account   Account? @relation(fields: [accountId], references: [id])

@@ -1,6 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { exampleRouter } from "~/server/api/routers/example";
-import { deviceClientRouter } from "./routers/device_client";
 import { userClientRouter } from "./routers/user_client";
 
 /**
@@ -10,7 +9,6 @@ import { userClientRouter } from "./routers/user_client";
  */
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
-  device_client: deviceClientRouter,
   user_client: userClientRouter,
 });
 

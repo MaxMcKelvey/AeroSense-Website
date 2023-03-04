@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { DeviceType } from "@prisma/client";
+
+const DeviceTypeZod: z.ZodType<DeviceType> = z.enum(['MOUNTEDv1', 'PERSONALv1']);
 
 import {
   createTRPCRouter,
@@ -9,21 +12,34 @@ import {
 const MacAddressType = z.string().regex(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/);
 
 export const userClientRouter = createTRPCRouter({
+    getAllDevices: protectedProcedure
+        .input(z.object({userId: z.string()}))
+        .query(async ({input, ctx}) => {
+            const devices = await ctx.prisma.device.findMany({
+                where: {
+                    userId: input.userId
+                }
+            })
+            // console.log(devices);
+            return devices;
+        }),
     registerDevice: protectedProcedure
-        .input(z.object({ mac_addr: MacAddressType, account: z.string() }))
-        .query(({ input, ctx }) => {
-            ctx.prisma.device.create({
+        .input(z.object({ mac_addr: MacAddressType, userId: z.string(), type: DeviceTypeZod }))
+        .mutation(async ({ input, ctx }) => {
+            await ctx.prisma.device.create({
                 data: {
                     id: input.mac_addr,
-                    accountId: input.account,
+                    name: input.mac_addr,
+                    userId: input.userId,
+                    deviceType: input.type,
                 }
             })
             return "device added"
         }),
     nameDevice: protectedProcedure
         .input(z.object({ id: MacAddressType, name: z.string() }))
-        .query(async ({ input, ctx }) => {
-            await ctx.prisma.device.update({
+        .mutation(async ({ input, ctx }) => {
+            const test = await ctx.prisma.device.update({
                 where: {
                     id: input.id,
                 },
@@ -31,11 +47,12 @@ export const userClientRouter = createTRPCRouter({
                     name: input.name
                 }
             })
+            // console.log(test);
             return "device renamed"
         }),
     deleteDevice: protectedProcedure
         .input(z.object({ id: MacAddressType }))
-        .query(async ({ input, ctx }) => {
+        .mutation(async ({ input, ctx }) => {
             await ctx.prisma.device.delete({
                 where: {
                     id: input.id
@@ -45,7 +62,7 @@ export const userClientRouter = createTRPCRouter({
         }),
     transferDevice: protectedProcedure
         .input(z.object({ id: MacAddressType, newAccountId: z.string() }))
-        .query(async ({ input, ctx }) => {
+        .mutation(async ({ input, ctx }) => {
             let newAccount = await ctx.prisma.account.findUnique({
                 where: {
                     id: input.newAccountId
@@ -61,14 +78,14 @@ export const userClientRouter = createTRPCRouter({
                     id: input.id
                 },
                 data: {
-                    accountId: input.newAccountId
+                    userId: input.newAccountId
                 }
             })
             return "device transferred"
         }),
     deleteDeviceLogs: protectedProcedure
         .input(z.object({ deviceId: MacAddressType, datetimeParams: z.any(), dataParams: z.any() }))
-        .query(async ({ input, ctx }) => {
+        .mutation(async ({ input, ctx }) => {
             const { count } = await ctx.prisma.log.deleteMany({
                 where: {
                     deviceId: input.deviceId,

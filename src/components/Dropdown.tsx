@@ -31,7 +31,7 @@ const DropdownMenu: React.FC<{ menuItems: { label: string, onClick: () => void }
 	const clickOutside = (event: MouseEvent) => {
 		const cur: HTMLDivElement | null = ref.current
         const node = event.target
-        if (cur && cur.contains(node)) return
+        if (cur && cur.contains(node as any)) return;
         setIsMenuOpen(false);
 	}
 

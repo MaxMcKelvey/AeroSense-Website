@@ -64,8 +64,8 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
         const checkIfAlreadyConnected = async () => {
             const devices = await Serial.getPorts();
             if (devices.length > 0) {
-                setPort(devices[0]);
-                await connect(devices[0]);
+                setPort(devices[0] as any);
+                await connect(devices[0] as any);
             }
         }
 
@@ -84,8 +84,8 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
         // let view = new Uint8Array([r, g, b]).buffer;
         // let view = new Uint8Array([r, g, b]).buffer;
         let enc = new TextEncoder();
-        // let view = enc.encode(JSON.stringify(payload));
-        let view = enc.encode("Hello World!\n");
+        let view = enc.encode(JSON.stringify(payload));
+        // let view = enc.encode("Hello World!");
         // console.log("Thing: " + JSON.stringify(payload));
         try {
             await port.send(view);

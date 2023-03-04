@@ -84,13 +84,14 @@ export const userClientRouter = createTRPCRouter({
             return "device transferred"
         }),
     deleteDeviceLogs: protectedProcedure
-        .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string(), dataParams: z.any() }))
+        .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string() }))
+        // .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string(), dataParams: z.any() }))
         .mutation(async ({ input, ctx }) => {
             const { count } = await ctx.prisma.log.deleteMany({
                 where: {
                     deviceId: input.deviceId,
                     datetime: input.datetimeParams,
-                    data: input.dataParams,
+                    // data: input.dataParams,
                 }
             })
             return `${count} logs deleted`

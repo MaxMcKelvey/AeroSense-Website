@@ -20,7 +20,7 @@ export class Serial {
     public static async getPorts(): Promise<Port[]> {
         const devices = await navigator.usb.getDevices();
         return devices.map(device => new Port(device));
-    };
+    }
 
     // if this is the first time the user has visited the page then it won’t have permission to access any devices
     public static async requestPort(ownFilters?: USBDeviceFilter[]): Promise<Port | null> {
@@ -58,9 +58,9 @@ export class Port {
     }
 
     public async send(data: BufferSource): Promise<USBOutTransferResult> {
-        const result = await this.device_.transferOut(this.endpointOut?.endpointNumber as any, data);
+        const result = await this.device_.transferOut(this.endpointOut?.endpointNumber as number, data);
         return result;
-    };
+    }
 
     public async disconnect(): Promise<void> {
         await this.device_.controlTransferOut({
@@ -74,36 +74,36 @@ export class Port {
         this.interface = null;
         this.endpointIn = null;
         this.endpointOut = null;
-    };
+    }
 
     public onReceive = (data: DataView): string => {
-        let textDecoder = new TextDecoder();
+        const textDecoder = new TextDecoder();
         return textDecoder.decode(data);
     }
 
     public async readLoop(): Promise<string> {
-        const result = await this.device_.transferIn(this.endpointIn?.endpointNumber as any, 64);
-        const data = this.onReceive(result.data as any);
+        const result = await this.device_.transferIn(this.endpointIn?.endpointNumber as number, 64);
+        const data = this.onReceive(result.data as DataView);
         return data;
-    };
+    }
 
     public async connect() {
         await this.device_.open();
         if (this.device_.configuration === null) {
-            this.device_.selectConfiguration(1);
+            void this.device_.selectConfiguration(1);
         }
 
         // find the interface which has 0xff interface class as its alternate and its interface number is 2
-        this.interface = (this.device_.configuration?.interfaces as any || []).find(
-            (c: any) => !!(c.alternates.find((a: any) => a.interfaceClass === 0xff)) && c.interfaceNumber === this.interfaceNumber_
-        );
+        this.interface = (this.device_.configuration?.interfaces as USBInterface[] || []).find(
+            (c: USBInterface) => !!(c.alternates.find((a: USBAlternateInterface) => a.interfaceClass === 0xff)) && c.interfaceNumber === this.interfaceNumber_
+        ) as USBInterface;
         if (!this.interface) {
             throw new Error('Interface not found');
         }
-        let alternate = this.interface.alternates[0];
+        const alternate = this.interface.alternates[0];
 
-        this.endpointIn = alternate?.endpoints.find(e => e.direction === "in") as any;
-        this.endpointOut = alternate?.endpoints.find(e => e.direction === "out") as any;
+        this.endpointIn = alternate?.endpoints.find(e => e.direction === "in") as USBEndpoint;
+        this.endpointOut = alternate?.endpoints.find(e => e.direction === "out") as USBEndpoint;
 
         if (!this.endpointIn || !this.endpointOut) {
             throw new Error('Endpoints not found');
@@ -120,5 +120,5 @@ export class Port {
             value: 0x01,
             index: this.interface.interfaceNumber
         });
-    };
+    }
 }

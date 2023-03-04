@@ -27,16 +27,16 @@ export const DeviceView: React.FC = () => {
     }
 
     const refetchTimer = () => {
-        setTimeout(() => refetchQuery(), 100);
-        setTimeout(() => refetchQuery(), 500);
-        setTimeout(() => refetchQuery(), 1000);
-        setTimeout(() => refetchQuery(), 10000);
+        setTimeout(() => {void refetchQuery()}, 100);
+        setTimeout(() => {void refetchQuery()}, 500);
+        setTimeout(() => {void refetchQuery()}, 1000);
+        setTimeout(() => {void refetchQuery()}, 10000);
     }
 
     return (
         <>
             <div className="w-full h-full p-10 grid grid-cols-[repeat(auto-fill,160px)] grid-rows-[repeat(auto-fill,1fr)] justify-start gap-10 overflow-scroll">
-                {devices ? devices.map(device => <DeviceCard name={device.name} type={device.deviceType} edit={() => editDeviceLambda(device.id, device.name)} />) : ""}
+                {devices ? devices.map(device => <DeviceCard key={device.id} name={device.name} type={device.deviceType} edit={() => editDeviceLambda(device.id, device.name)} />) : ""}
             </div>
             <button className="absolute bottom-8 right-8 w-16 h-16 rounded-full bg-secondary1 text-5xl text-white p-2" onClick={() => setNewDevicePopupVisible(true)}>
                 <svg className="svg-icon fill-white" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M836 476H548V188c0-19.8-16.2-36-36-36s-36 16.2-36 36v288H188c-19.8 0-36 16.2-36 36s16.2 36 36 36h288v288c0 19.8 16.2 36 36 36s36-16.2 36-36V548h288c19.8 0 36-16.2 36-36s-16.2-36-36-36z"  /></svg>

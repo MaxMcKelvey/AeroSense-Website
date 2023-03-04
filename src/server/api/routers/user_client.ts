@@ -63,7 +63,7 @@ export const userClientRouter = createTRPCRouter({
     transferDevice: protectedProcedure
         .input(z.object({ id: MacAddressType, newAccountId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            let newAccount = await ctx.prisma.account.findUnique({
+            const newAccount = await ctx.prisma.account.findUnique({
                 where: {
                     id: input.newAccountId
                 }
@@ -84,7 +84,7 @@ export const userClientRouter = createTRPCRouter({
             return "device transferred"
         }),
     deleteDeviceLogs: protectedProcedure
-        .input(z.object({ deviceId: MacAddressType, datetimeParams: z.any(), dataParams: z.any() }))
+        .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string(), dataParams: z.any() }))
         .mutation(async ({ input, ctx }) => {
             const { count } = await ctx.prisma.log.deleteMany({
                 where: {

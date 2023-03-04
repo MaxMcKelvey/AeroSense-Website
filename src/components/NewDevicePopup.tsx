@@ -14,7 +14,7 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: Function }> 
     const userId = sessionData?.user?.id ? sessionData.user.id : "";
     const createDevice = api.user_client.registerDevice.useMutation();
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = (event: {preventDefault: () => void}) => {
         event.preventDefault();
         createDevice.mutate(
             { mac_addr: deviceId, userId: userId, type: deviceType},
@@ -29,7 +29,7 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: Function }> 
         };
     })
 
-    const escFunction = (event: any) => {
+    const escFunction = (event: {key: string}) => {
         if (event.key === "Escape") {
             setHidden();
         }

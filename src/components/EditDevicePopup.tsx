@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 
-export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: Function, deviceId: string, deviceName: string }> = (
+export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void, deviceId: string, deviceName: string }> = (
     { hidden, setHidden, deviceId, deviceName }
 ) => {
     const [name, setName] = useState(deviceName);
     const nameDevice = api.user_client.nameDevice.useMutation();
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = (event: {preventDefault: () => void}) => {
         event.preventDefault();
         nameDevice.mutate(
             { id: deviceId, name: name },
@@ -22,7 +22,7 @@ export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: Function, d
         };
     })
 
-    const escFunction = (event: any) => {
+    const escFunction = (event: {key: string}) => {
         if (event.key === "Escape") {
             setHidden();
         }

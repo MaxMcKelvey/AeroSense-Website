@@ -49,7 +49,7 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
             return;
         }
 
-        let view = new Uint8Array([r, g, b]).buffer;
+        const view = new Uint8Array([r, g, b]).buffer;
         try {
             await port.send(view);
             const read = await port.readLoop();
@@ -64,16 +64,16 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
         const checkIfAlreadyConnected = async () => {
             const devices = await Serial.getPorts();
             if (devices.length > 0) {
-                setPort(devices[0] as any);
-                await connect(devices[0] as any);
+                setPort(devices[0] as Port);
+                await connect(devices[0] as Port);
             }
         }
 
-        checkIfAlreadyConnected();
+        void checkIfAlreadyConnected();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        send();
+        void send();
     }, [r, g, b]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const regitsterDevice = async () => {
@@ -83,8 +83,8 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
 
         // let view = new Uint8Array([r, g, b]).buffer;
         // let view = new Uint8Array([r, g, b]).buffer;
-        let enc = new TextEncoder();
-        let view = enc.encode(JSON.stringify(payload));
+        const enc = new TextEncoder();
+        const view = enc.encode(JSON.stringify(payload));
         // let view = enc.encode("Hello World!");
         // console.log("Thing: " + JSON.stringify(payload));
         try {
@@ -101,9 +101,9 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
         <div className="App">
             <p>
                 {port ? (
-                    <button onClick={disconnect}>Disconnect</button>
+                    <button onClick={() => void disconnect()}>Disconnect</button>
                 ) : (
-                    <button onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => connect(port)}>Connect</button>
+                    <button onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void connect(port)}>Connect</button>
                 )}
             </p>
             {/* <p>
@@ -114,7 +114,7 @@ export const WebUSBTest: React.FunctionComponent<any> = () => {
                 <input disabled={!port} type="range" min="0" max="255" value={g} onChange={(e) => setG(parseInt(e.target.value))} id="green" />
                 <input disabled={!port} type="range" min="0" max="255" value={b} onChange={(e) => setB(parseInt(e.target.value))} id="blue" />
             </div> */}
-            <button className="" onClick={() => regitsterDevice()} >Send Data</button>
+            <button className="" onClick={() => void regitsterDevice()} >Send Data</button>
         </div>
     );
 }

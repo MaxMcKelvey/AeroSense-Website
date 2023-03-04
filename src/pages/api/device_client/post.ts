@@ -25,7 +25,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         return;
     }
 
-    let device = await prisma.device.findUnique({
+    const device = await prisma.device.findUnique({
         where: {
             id: input.data.id
         }
@@ -36,7 +36,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         return;
     }
 
-    let logs = input.data.posts.map(post => ({
+    const logs = input.data.posts.map(post => ({
         deviceId: input.data.id,
         datetime: post.datetime,
         data: post.data,

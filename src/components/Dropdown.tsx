@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const DropdownMenu: React.FC<{ menuItems: { label: string, onClick: Function }[], dropdownName: string }> = ({ menuItems, dropdownName }) => {
+const DropdownMenu: React.FC<{ menuItems: { label: string, onClick: () => void }[], dropdownName: string }> = ({ menuItems, dropdownName }) => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const ref = useRef(null);
+	const ref = useRef<HTMLDivElement>(null);
 
 	const handleMenuToggle = () => {
 		setIsMenuOpen(!isMenuOpen);
 	};
 
-	const handleMenuItemClick = (menuItem: any) => {
+	const handleMenuItemClick = (menuItem: {onClick: () => void}) => {
 		menuItem.onClick();
 		setIsMenuOpen(false);
 	};
@@ -22,14 +22,14 @@ const DropdownMenu: React.FC<{ menuItems: { label: string, onClick: Function }[]
 		};
 	})
 
-	const escFunction = (event: any) => {
+	const escFunction = (event: {key: string}) => {
 		if (event.key === "Escape") {
 			setIsMenuOpen(false);
 		}
 	}
 
-	const clickOutside = (event: any) => {
-		const cur: any = ref.current
+	const clickOutside = (event: MouseEvent) => {
+		const cur: HTMLDivElement | null = ref.current
         const node = event.target
         if (cur && cur.contains(node)) return
         setIsMenuOpen(false);

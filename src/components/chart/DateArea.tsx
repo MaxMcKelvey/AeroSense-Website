@@ -12,6 +12,9 @@ import {
 } from "recharts";
 import DataUtils from "./DataUtils";
 import CustomTooltip from "./CustomTooltip";
+import { AxisDomain } from "recharts/types/util/types";
+import { ContentType } from "recharts/types/component/Tooltip";
+import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 const dateFormatter = (date: number) => {
     return format(new Date(date), "dd/MMM");
@@ -23,7 +26,7 @@ const dateFormatter = (date: number) => {
 const getTicks = (startDate: Date, endDate: Date, num: number) => {
     const diffDays = differenceInCalendarDays(endDate, startDate);
 
-    let current = startDate,
+    const current = startDate,
         velocity = Math.round(diffDays / (num - 1));
 
     const ticks = [startDate.getTime()];
@@ -98,12 +101,12 @@ const DateArea: React.FC<{ data: { date: string, val: number }[], startDate: str
                         scale="time"
                         tickFormatter={dateFormatter}
                         type="number"
-                        domain={domain as any}
+                        domain={domain as unknown as AxisDomain}
                         ticks={ticks}
                     />
                     {/* <YAxis tickCount={7} hasTick /> */}
                     <YAxis tickCount={7} />
-                    <Tooltip content={CustomTooltip as any} />
+                    <Tooltip content={CustomTooltip as ContentType<ValueType, NameType>} />
                     <Tooltip />
                     <Line type="monotone" dataKey={"val"} stroke="#8884d8" dot={<></>} />
                 </LineChart>

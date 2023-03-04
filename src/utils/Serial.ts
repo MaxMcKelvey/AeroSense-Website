@@ -45,17 +45,20 @@ export class Port {
     public device_: USBDevice;
     public interfaceNumber_: number;
 
-    public interface: USBInterface;
-    public endpointIn: USBEndpoint;
-    public endpointOut: USBEndpoint;
+    public interface: USBInterface | null;
+    public endpointIn: USBEndpoint | null;
+    public endpointOut: USBEndpoint | null;
 
     constructor(device: USBDevice) {
         this.device_ = device;
         this.interfaceNumber_ = 2;  // interface number defined in webusb arduino library
+        this.interface = null;
+        this.endpointIn = null;
+        this.endpointOut = null;
     }
 
     public async send(data: BufferSource): Promise<USBOutTransferResult> {
-        const result = await this.device_.transferOut(this.endpointOut.endpointNumber, data);
+        const result = await this.device_.transferOut(this.endpointOut?.endpointNumber as any, data);
         return result;
     };
 
@@ -79,8 +82,8 @@ export class Port {
     }
 
     public async readLoop(): Promise<string> {
-        const result = await this.device_.transferIn(this.endpointIn.endpointNumber, 64);
-        const data = this.onReceive(result.data);
+        const result = await this.device_.transferIn(this.endpointIn?.endpointNumber as any, 64);
+        const data = this.onReceive(result.data as any);
         return data;
     };
 
@@ -91,16 +94,16 @@ export class Port {
         }
 
         // find the interface which has 0xff interface class as its alternate and its interface number is 2
-        this.interface = (this.device_.configuration.interfaces || []).find(
-            c => !!(c.alternates.find(a => a.interfaceClass === 0xff)) && c.interfaceNumber === this.interfaceNumber_
+        this.interface = (this.device_.configuration?.interfaces as any || []).find(
+            (c: any) => !!(c.alternates.find((a: any) => a.interfaceClass === 0xff)) && c.interfaceNumber === this.interfaceNumber_
         );
         if (!this.interface) {
             throw new Error('Interface not found');
         }
         let alternate = this.interface.alternates[0];
 
-        this.endpointIn = alternate.endpoints.find(e => e.direction === "in");
-        this.endpointOut = alternate.endpoints.find(e => e.direction === "out");
+        this.endpointIn = alternate?.endpoints.find(e => e.direction === "in") as any;
+        this.endpointOut = alternate?.endpoints.find(e => e.direction === "out") as any;
 
         if (!this.endpointIn || !this.endpointOut) {
             throw new Error('Endpoints not found');

@@ -3,23 +3,24 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 
-import { WebUSBTest } from "./WebUSBTest";
+const filters: SerialPortFilter[] = [
+    { 'usbVendorId': 0x239A }, // Adafruit Boards!
+];
 
-export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: Function }> = (
+export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }> = (
     { hidden, setHidden }
 ) => {
-    const [deviceId, setDeviceId] = useState("");
-    const [deviceType, setDeviceType] = useState<DeviceType>(DeviceType.MOUNTEDv1);
+    // const [deviceId, setDeviceId] = useState("");
+    // const [deviceType, setDeviceType] = useState<DeviceType>(DeviceType.MOUNTEDv1);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const { data: sessionData } = useSession();
     const userId = sessionData?.user?.id ? sessionData.user.id : "";
     const createDevice = api.user_client.registerDevice.useMutation();
 
-    const handleSubmit = (event: {preventDefault: () => void}) => {
+    const handleSubmit = (event: { preventDefault: () => void }) => {
         event.preventDefault();
-        createDevice.mutate(
-            { mac_addr: deviceId, userId: userId, type: deviceType},
-        );
-        setHidden();
+        void open(port as SerialPort);
     }
 
     useEffect(() => {
@@ -29,30 +30,116 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: Function }> 
         };
     })
 
-    const escFunction = (event: {key: string}) => {
+    const escFunction = (event: { key: string }) => {
         if (event.key === "Escape") {
             setHidden();
+        }
+    }
+
+    const [port, setPort] = useState<SerialPort | null>(null);
+
+    const Serial = navigator.serial;
+
+    const connect = async () => {
+        const port = await Serial.requestPort({ filters });
+        setPort(port);
+    }
+
+    useEffect(() => {
+        void connect();
+    }, [])
+
+    const open = async (port: SerialPort) => {
+        await port.open({ baudRate: 9600 });
+
+        setPort(port);
+        void initRead(port);
+        void write(port);
+
+        // setTimeout(() => { initRead(port) }, 300);
+        // setTimeout(() => { write(port) }, 500);
+    }
+
+    const write = async (port: SerialPort) => {
+        if (!port.writable) {
+            console.log("not writable");
+            return;
+        }
+        if (port.writable.locked) {
+            console.log("write locked");
+            return;
+        }
+
+        const textEncoder = new TextEncoderStream();
+        const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+        const writer = textEncoder.writable.getWriter();
+        await writer.write(JSON.stringify({ wifi_username: username, wifi_password: password, userId: userId }));
+        await writer.close();
+        writer.releaseLock();
+    }
+
+    const initRead = async (port: SerialPort) => {
+        if (!port.readable) {
+            console.log("not readable");
+            return;
+        }
+        if (port.readable.locked) {
+            console.log("read locked");
+            return;
+        }
+
+        // console.log("reading!");
+
+        // Listen to data coming from the serial device.
+        const textDecoder = new TextDecoderStream();
+        const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+        const reader = textDecoder.readable.getReader();
+        let input = "";
+        while (true) {
+            const { value, done } = await reader.read();
+            if (!value) continue;
+            input += value;
+            if (input.charAt(input.length - 1) != '}') continue;
+            const json = JSON.parse(input) as { mac_addr: string, type: string, userId: string };
+            // console.log({ mac_addr: json.mac_addr, userId: userId, type: json.type });
+            console.log(json);
+            createDevice.mutate({ mac_addr: json.mac_addr, userId: userId, type: json.type as DeviceType });
+            setHidden();
+            
+            void reader.cancel();
+            await readableStreamClosed.catch(() => {/* ignore the error */});
+
+            await port.close();
+
+            break;
         }
     }
 
     return (
         <div className={`${hidden ? "invisible" : "visible"} fixed w-full h-full flex place-content-center flex-wrap backdrop-blur-sm`}>
             <div className="bg-secondary1 w-60 h-60 rounded-xl p-5">
-                {/* <form onSubmit={handleSubmit} onAbort={() => setHidden()} onKeyDown={(e) => escFunction(e)}> */}
-                    {/* <label>Rename your device:
+                <form onSubmit={handleSubmit} onAbort={() => setHidden()} onKeyDown={(e) => escFunction(e)}>
+                    <label>WIFI Username:
                         <div className="p-1"></div>
                         <input
                             className="rounded-md"
                             type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </label>
+                    <label>WIFI Password:
+                        <div className="p-1"></div>
+                        <input
+                            className="rounded-md"
+                            type="text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                     </label>
                     <div className="p-1"></div>
-                    <input type="submit" /> */}
-                    Add a new device here in the future!
-                    <WebUSBTest />
-                {/* </form> */}
+                    <input type="submit" />
+                </form>
             </div>
         </div>
     );

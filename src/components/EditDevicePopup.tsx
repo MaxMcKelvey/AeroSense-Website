@@ -6,6 +6,7 @@ export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void,
 ) => {
     const [name, setName] = useState(deviceName);
     const nameDevice = api.user_client.nameDevice.useMutation();
+    const deleteDevice = api.user_client.deleteDevice.useMutation();
 
     const handleSubmit = (event: {preventDefault: () => void}) => {
         event.preventDefault();
@@ -14,7 +15,14 @@ export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void,
         );
         setHidden();
     }
-
+    
+    const handleDelete = () => {
+        deleteDevice.mutate(
+            { id: deviceId },
+        );
+        setHidden();
+    }
+    
     useEffect(() => {
         document.addEventListener("keydown", escFunction, false);
         return function cleanup() {
@@ -30,7 +38,7 @@ export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void,
 
     return (
         <div className={`${hidden ? "invisible" : "visible"} fixed w-full h-full flex place-content-center flex-wrap backdrop-blur-sm`}>
-            <div className="bg-secondary1 w-60 h-60 rounded-xl p-5">
+            <div className="bg-secondary1 w-60 h-60 rounded-xl p-5 relative">
                 <form onSubmit={handleSubmit} onAbort={() => setHidden()} onKeyDown={(e) => escFunction(e)}>
                     <label>Rename your device:
                         <div className="p-1"></div>
@@ -42,8 +50,9 @@ export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void,
                         />
                     </label>
                     <div className="p-1"></div>
-                    <input type="submit" />
+                    <input type="submit" className="absolute bottom-2 right-2 bg-neutral2 p-2 rounded-lg" />
                 </form>
+                <button className="absolute bottom-2 left-2 bg-red-600 p-2 rounded-lg" onClick={() => handleDelete()}>Delete</button>
             </div>
         </div>
     );

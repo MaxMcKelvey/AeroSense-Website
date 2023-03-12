@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Port, Serial } from "~/utils/Serial";
+import { Port, Serial } from "~/utils/USBSerial";
 
 const payload = {
     wifi_username: "ABC",

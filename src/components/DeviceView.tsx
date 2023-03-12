@@ -26,6 +26,15 @@ export const DeviceView: React.FC = () => {
         setPopupVisible(true);
     }
 
+    const newDevice = () => {
+        if (!("serial" in navigator)) {
+            // The Web Serial API is supported.
+            alert("Your browser isn't supported. Please use chrome version 89 or higher.");
+            return;
+        }
+        setNewDevicePopupVisible(true);
+    }
+
     const refetchTimer = () => {
         setTimeout(() => {void refetchQuery()}, 100);
         setTimeout(() => {void refetchQuery()}, 500);
@@ -38,7 +47,7 @@ export const DeviceView: React.FC = () => {
             <div className="w-full h-full p-10 grid grid-cols-[repeat(auto-fill,160px)] grid-rows-[repeat(auto-fill,1fr)] justify-start gap-10 overflow-scroll">
                 {devices ? devices.map(device => <DeviceCard key={device.id} name={device.name} type={device.deviceType} edit={() => editDeviceLambda(device.id, device.name)} />) : ""}
             </div>
-            <button className="absolute bottom-8 right-8 w-16 h-16 rounded-full bg-secondary1 text-5xl text-white p-2" onClick={() => setNewDevicePopupVisible(true)}>
+            <button className="absolute bottom-8 right-8 w-16 h-16 rounded-full bg-secondary1 text-5xl text-white p-2" onClick={() => newDevice()}>
                 <svg className="svg-icon fill-white" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M836 476H548V188c0-19.8-16.2-36-36-36s-36 16.2-36 36v288H188c-19.8 0-36 16.2-36 36s16.2 36 36 36h288v288c0 19.8 16.2 36 36 36s36-16.2 36-36V548h288c19.8 0 36-16.2 36-36s-16.2-36-36-36z"  /></svg>
             </button>
             {popupVisible && <EditDevicePopup hidden={!popupVisible} setHidden={() => {setPopupVisible(false); refetchTimer();}} deviceId={editDeviceId} deviceName={editDeviceName} />}

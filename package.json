@@ -17,6 +17,7 @@
     "@trpc/next": "^10.9.0",
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
+    "@types/w3c-web-serial": "^1.0.3",
     "@types/w3c-web-usb": "^1.0.6",
     "date-fns": "^2.29.3",
     "next": "13.1.6",

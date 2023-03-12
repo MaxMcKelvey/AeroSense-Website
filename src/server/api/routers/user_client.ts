@@ -1,20 +1,29 @@
 import { z } from "zod";
-import { DeviceType } from "@prisma/client";
+import { DeviceType, Log } from "@prisma/client";
 
 const DeviceTypeZod: z.ZodType<DeviceType> = z.enum(['MOUNTEDv1', 'PERSONALv1']);
 
 import {
-  createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
+    createTRPCRouter,
+    publicProcedure,
+    protectedProcedure,
 } from "~/server/api/trpc";
 
 const MacAddressType = z.string().regex(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/);
 
+type FlattenObjectKeys<
+  T extends Record<string, unknown>,
+  Key = keyof T
+> = Key extends string
+  ? T[Key] extends Record<string, unknown>
+    ? `${FlattenObjectKeys<T[Key]>}`
+    : `${Key}`
+  : never
+
 export const userClientRouter = createTRPCRouter({
     getAllDevices: protectedProcedure
-        .input(z.object({userId: z.string()}))
-        .query(async ({input, ctx}) => {
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input, ctx }) => {
             const devices = await ctx.prisma.device.findMany({
                 where: {
                     userId: input.userId
@@ -95,6 +104,24 @@ export const userClientRouter = createTRPCRouter({
                 }
             })
             return `${count} logs deleted`
+        }),
+    fetchDeviceLogs: protectedProcedure
+        .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string() }))
+        // .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string(), dataParams: z.any() }))
+        .query(async ({ input, ctx }) => {
+            const logs: Log[] = await ctx.prisma.log.findMany({
+                where: {
+                    // deviceId: input.deviceId,
+                    // datetime: input.datetimeParams,
+                    // data: input.dataParams,
+                }
+            })
+            const parsedLogs = logs.map(log => ({
+                datetime: log.datetime,
+                deviceId: log.deviceId,
+                ...(log.data as object)
+            }));
+            return parsedLogs
         }),
     hello: publicProcedure
         .input(z.object({ text: z.string() }))

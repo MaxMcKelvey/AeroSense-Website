@@ -66,20 +66,10 @@ const fillTicksData = (_ticks: number[], data: { date: number, val: number }[]) 
     return filled;
 };
 
-const DateArea: React.FC<{ data: { date: string, val: number }[], startDate: string, endDate: string }> = ({ data, startDate, endDate }) => {
-    // console.log(new Date("2018-02-21 12:00:00"));
-    const parsedStartDate = new Date(startDate.substring(0, 10));
-    const parsedEndDate = new Date(endDate.substring(0, 10));
-
-    // console.log(data);
-
-    const parsedData = data.map((datum) => ({ date: new Date(datum.date.substring(0, 10)).getTime(), val: datum.val }))
-
-    // console.log(parsedData);
-
-    const domain = [(dataMin: number) => dataMin, () => parsedEndDate.getTime()];
-    const ticks = getTicks(parsedStartDate, parsedEndDate, 5);
-    const filledData = fillTicksData(ticks, parsedData);
+const DateArea: React.FC<{ data: { date: Date, val: number }[], startDate: Date, endDate: Date }> = ({ data, startDate, endDate }) => {
+    const domain = [(dataMin: number) => dataMin, () => endDate.getTime()];
+    const ticks = getTicks(startDate, endDate, 5);
+    const filledData = fillTicksData(ticks, data.map((datum) => ({ date: datum.date.getTime(), val: datum.val })));
 
     return (
         // <div>

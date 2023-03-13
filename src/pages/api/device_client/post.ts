@@ -14,7 +14,7 @@ const InputType = z.object({ id: z.string(), posts: z.array(z.object({
     })
 }))})
 
-const DateTimeType = z.string().regex(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/);
+const DateTimeType = z.string().regex(/\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/);
 
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const input = InputType.safeParse(req.body);
@@ -36,11 +36,17 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         return;
     }
 
+    console.log(input.data.posts);
+
     const logs = input.data.posts.map(post => ({
         deviceId: input.data.id,
         datetime: new Date(post.datetime),
         data: post.data,
-    })).filter(log => DateTimeType.safeParse(log.datetime).success)
+    }))
+    
+    //.filter(log => DateTimeType.safeParse(log.datetime).success)
+
+    console.log(logs);
 
     const { count } = await prisma.log.createMany({
         data: logs

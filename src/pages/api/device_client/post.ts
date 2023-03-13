@@ -38,7 +38,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
 
     const logs = input.data.posts.map(post => ({
         deviceId: input.data.id,
-        datetime: post.datetime,
+        datetime: new Date(post.datetime),
         data: post.data,
     })).filter(log => DateTimeType.safeParse(log.datetime).success)
 
@@ -48,5 +48,5 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
 
     console.log(count);
 
-    res.status(200).json("success");
+    res.status(200).json(`success, ${count} posts posted`);
 }

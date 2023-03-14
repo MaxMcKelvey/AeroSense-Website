@@ -20,12 +20,12 @@ export const DataView: React.FC = () => {
     const parsedDevices = [{label: "All Devices", onClick: () => {
         setSelectedDeviceIds(undefined);
         setSelectedDevices("All Devices");
-        refetchData();
+        void refetchData();
     }}];
     if (devices) parsedDevices.push(...devices.map(d => ({label: d.name, onClick: () => {
         setSelectedDeviceIds([d.id]);
         setSelectedDevices(d.name);
-        refetchData();
+        void refetchData();
     }})));
 
     const [dataName, setDataName] = useState<string>(DataTypes[0] as string);

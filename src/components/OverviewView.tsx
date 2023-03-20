@@ -48,7 +48,7 @@ const data = [
 export const OverviewView: React.FC = () => {
     return (
         <div className="w-full h-full">
-            <h2 className="text-2xl p-5 underline underline-offset-4">Your Month at a Glance</h2>
+            {/* <h2 className="text-2xl p-5 underline underline-offset-4">Your Month at a Glance</h2>
             <LineChart width={730} height={250} data={data}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -58,7 +58,11 @@ export const OverviewView: React.FC = () => {
                 <Legend />
                 <Line type="monotone" dataKey="pv" stroke="#8884d8" />
                 <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-            </LineChart>
+            </LineChart> */}
+            <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 ">
+                <span className="text-5xl font-extrabold tracking-tight text-secondary1 sm:text-[5rem]">Big Updates</span>
+                <span className="text-5xl font-extrabold tracking-tight text-primary sm:text-[5rem]"> Coming Soon!</span>
+            </div>
         </div>
     );
 }

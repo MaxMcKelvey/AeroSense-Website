@@ -5,6 +5,8 @@ import { api } from "~/utils/api";
 
 const filters: SerialPortFilter[] = [
     { 'usbVendorId': 0x239A }, // Adafruit Boards!
+    { 'usbVendorId': 0x303a }, // SeeedStudio XIAO C3!
+    { 'usbVendorId': 0x2E8A }, // RP2040 Boards!
 ];
 
 export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }> = (

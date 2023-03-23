@@ -44,7 +44,7 @@ export const DeviceView: React.FC = () => {
 
     return (
         <>
-            <div className="w-full h-full p-10 grid grid-cols-[repeat(auto-fill,160px)] grid-rows-[repeat(auto-fill,1fr)] justify-start gap-10 overflow-scroll">
+            <div className="w-full h-full p-10 grid grid-cols-[repeat(auto-fill,160px)] grid-rows-[repeat(auto-fill,192px)] justify-start gap-10 overflow-scroll">
                 {devices ? devices.map(device => <DeviceCard key={device.id} name={device.name} type={device.deviceType} edit={() => editDeviceLambda(device.id, device.name)} />) : ""}
             </div>
             <button className="absolute bottom-8 right-8 w-16 h-16 rounded-full bg-secondary1 text-5xl text-white p-2" onClick={() => newDevice()}>

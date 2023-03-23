@@ -75,7 +75,7 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }
         const textEncoder = new TextEncoderStream();
         const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
         const writer = textEncoder.writable.getWriter();
-        await writer.write(JSON.stringify({ wifi_username: username, wifi_password: password, userId: userId, datetime: (new Date(Date.now())).toISOString() }));
+        await writer.write(JSON.stringify({ wifi_username: username, wifi_password: password, userId: userId, unix_time: Date.now(), datetime: (new Date(Date.now())).toISOString() }));
         await writer.close();
         writer.releaseLock();
     }
@@ -102,6 +102,9 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }
             if (!value) continue;
             input += value;
             if (input.charAt(input.length - 1) != '}') continue;
+            // console.log(input);
+            input = input.substring(input.lastIndexOf("{"));
+            // console.log(input);
             const json = JSON.parse(input) as { mac_addr: string, type: string, userId: string };
             // console.log({ mac_addr: json.mac_addr, userId: userId, type: json.type });
             console.log(json);

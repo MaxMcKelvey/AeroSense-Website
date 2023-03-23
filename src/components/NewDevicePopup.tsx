@@ -75,7 +75,7 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }
         const textEncoder = new TextEncoderStream();
         const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
         const writer = textEncoder.writable.getWriter();
-        await writer.write(JSON.stringify({ wifi_username: username, wifi_password: password, userId: userId }));
+        await writer.write(JSON.stringify({ wifi_username: username, wifi_password: password, userId: userId, datetime: (new Date(Date.now())).toISOString() }));
         await writer.close();
         writer.releaseLock();
     }

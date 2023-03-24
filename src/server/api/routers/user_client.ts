@@ -62,6 +62,12 @@ export const userClientRouter = createTRPCRouter({
     deleteDevice: protectedProcedure
         .input(z.object({ id: MacAddressType }))
         .mutation(async ({ input, ctx }) => {
+            await ctx.prisma.log.delete({
+                where: {
+                    deviceId: input.id
+                }
+            })
+
             await ctx.prisma.device.delete({
                 where: {
                     id: input.id

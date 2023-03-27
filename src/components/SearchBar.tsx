@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { MagnifyingGlassIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
 // function SearchBar() {
-const SearchBar: React.FC<{ title: string }> = ({ title }) => {
+const SearchBar: React.FC<{ title: string, setParam: (str: string) => void }> = ({ title, setParam }) => {
 	const [searchQuery, setSearchQuery] = useState('');
 
 	const handleSubmit = (event: { preventDefault: () => void }) => {
 		event.preventDefault();
-		// TODO: handle search query submission
+		setParam(searchQuery);
 	};
 
 	const handleChange = (event: { target: { value: string } }) => {
 		setSearchQuery(event.target.value);
+		setParam(event.target.value);
 	};
 
 	return (

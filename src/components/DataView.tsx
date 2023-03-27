@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DropdownMenu from "./Dropdown";
-import DateArea from "./chart/DateArea"
+import DateArea from "./chart/MyDateArea"
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import SearchBar from "./SearchBar";
@@ -32,10 +32,12 @@ export const DataView: React.FC = () => {
     const [selectedDevices, setSelectedDevices] = useState<string>("All Devices");
     const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[] | undefined>(undefined);
     const [parsedData, setParsedData] = useState<{ date: Date, val: number }[]>([]);
-    const [parsedEndDate, setParsedEndDate] = useState<Date>(new Date("2019-10-15 12:00:00"));
+    const [parsedStartDate, setParsedStartDate] = useState<string>("");
+    const [parsedEndDate, setParsedEndDate] = useState<string>("");
+    const [datetimeParamString, setDatetimeParamString] = useState<string | undefined>(undefined);
     const dataTypes = DataTypes.map(type => ({ label: type, onClick: () => setDataName(type) }))
     const { data: data, refetch: refetchData } = api.user_client.fetchDeviceLogs.useQuery(
-        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: "none" }
+        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
     );
 
     const getDataType = (name: string) => {
@@ -65,23 +67,31 @@ export const DataView: React.FC = () => {
     }, [dataName, data])
 
     useEffect(() => {
-        const endDate = parsedData[parsedData.length - 1]?.date;
-        setParsedEndDate(endDate ? endDate : new Date("2019-10-15 12:00:00"));
-    }, [parsedData])
+        setDatetimeParamString(JSON.stringify({gte: parsedStartDate, lt: parsedEndDate}));
+        void refetchData();
+    }, [parsedStartDate, parsedEndDate])
 
     return (
         <div className="w-full h-full p-10" >
             <div className="flex flex-row justify-start gap-10">
                 <DropdownMenu menuItems={dataTypes} dropdownName={dataName} title="Data Type"/>
                 <DropdownMenu menuItems={parsedDevices} dropdownName={selectedDevices} title="Select Device(s)"/>
-                <SearchBar title="Start Date" />
-                <SearchBar title="End Date" />
+                <SearchBar title="Start Date" setParam={setParsedStartDate}/>
+                <SearchBar title="End Date" setParam={setParsedEndDate}/>
             </div>
             <div className="p-5"></div>
             <div className="h2 text-2xl">{`Graph of ${dataName} in ${getDataUnits(dataName)} over Time`}</div>
             <div className="p-5"></div>
 
-            <DateArea data={parsedData} startDate={parsedData[0] ? parsedData[0]?.date : new Date("2022-01-11 12:00:00")} endDate={new Date("2023-3-17 12:00:00")} />
+            { parsedData.length > 0 && parsedData[0]?.date && parsedData[parsedData.length - 1]?.date &&
+                <DateArea
+                    data={parsedData}
+                    startDate={parsedData[0].date}
+                    endDate={(parsedData[parsedData.length - 1] as {date: Date, val: number}).date}
+                    // startDate={parsedStartDate ? parsedStartDate : parsedData[0]?.date}
+                    // endDate={parsedEndDate ? parsedEndDate : (parsedData[parsedData.length - 1] as {date: Date, val: number}).date}
+                />
+            }
         </div>
     );
 }

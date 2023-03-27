@@ -112,9 +112,11 @@ export const userClientRouter = createTRPCRouter({
             return `${count} logs deleted`
         }),
     fetchDeviceLogs: protectedProcedure
-        .input(z.object({ userId: z.string(), deviceIds: z.optional(z.array(MacAddressType)), datetimeParams: z.string() }))
-        // .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string(), dataParams: z.any() }))
+        .input(z.object({ userId: z.string(), deviceIds: z.optional(z.array(MacAddressType)), datetimeParams: z.optional(z.string()) }))
         .query(async ({ input, ctx }) => {
+            const datetimeParams: undefined | { gt?: Date, lt?: Date, gte?: Date, lte?: Date}
+                = input.datetimeParams ? JSON.parse(input.datetimeParams) as { gt?: Date, lt?: Date, gte?: Date, lte?: Date} : undefined;
+
             const logs: Log[] = await ctx.prisma.log.findMany({
                 where: {
                     deviceId: {
@@ -122,8 +124,11 @@ export const userClientRouter = createTRPCRouter({
                     },
                     device: {
                         userId: input.userId,
+                    },
+                    datetime: {
+                        gte: datetimeParams?.gte ? new Date(datetimeParams?.gte) : undefined,
+                        lt: datetimeParams?.lt ? new Date(datetimeParams?.lt) : undefined,
                     }
-                    // datetime: input.datetimeParams,
                     // data: input.dataParams,
                 }
             })

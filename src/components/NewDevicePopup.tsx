@@ -122,12 +122,14 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }
 
     return (
         <div className={`${hidden ? "invisible" : "visible"} fixed w-full h-full flex place-content-center flex-wrap backdrop-blur-sm`}>
-            <div className="bg-secondary1 w-60 h-60 rounded-xl p-5">
+            {/* <div className="bg-secondary1 w-60 h-60 rounded-xl p-5"> */}
+            <div className="w-60 h-60 rounded-xl p-5 drop-shadow-xl bg-white">
+            <h2 className="text-lg pb-3">Add a New Device</h2>
                 <form onSubmit={handleSubmit} onAbort={() => setHidden()} onKeyDown={(e) => escFunction(e)}>
                     <label>WIFI Username:
                         <div className="p-1"></div>
                         <input
-                            className="rounded-md"
+                            className="rounded-md border-2 border-gray-200 px-1"
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -136,14 +138,15 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }
                     <label>WIFI Password:
                         <div className="p-1"></div>
                         <input
-                            className="rounded-md"
+                            className="rounded-md border-2 border-gray-200 px-1"
                             type="text"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </label>
                     <div className="p-1"></div>
-                    <input type="submit" />
+                    {/* <input type="submit"/> */}
+                    <button className="bg-neutral2 hover:drop-shadow-md absolute bottom-2 right-2 p-2 px-4 rounded-lg" type="submit">Add Device</button>
                 </form>
             </div>
         </div>

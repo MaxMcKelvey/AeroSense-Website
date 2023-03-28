@@ -1,4 +1,8 @@
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { useState } from "react";
+// import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { RadioGroup } from "./RadioGroup";
+import { DataTypeSymbols, DataTypeUnits, DataTypes, DataTypesShort } from "~/utils/DataTypes";
+import MapPage from "./map/MapPage";
 
 const data = [
     {
@@ -46,23 +50,19 @@ const data = [
 ]
 
 export const OverviewView: React.FC = () => {
+    const [selected, setSelected] = useState("Overview");
     return (
         <div className="w-full h-full">
-            {/* <h2 className="text-2xl p-5 underline underline-offset-4">Your Month at a Glance</h2>
-            <LineChart width={730} height={250} data={data}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-                <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-            </LineChart> */}
-            <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 ">
+            {/* <h2 className="text-2xl p-5 underline underline-offset-4">Your Month at a Glance</h2> */}
+
+            <RadioGroup name="test" values={["Overview", ...DataTypesShort]} selected={selected} onChange={setSelected} />
+
+            <MapPage />
+
+            {/* <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 ">
                 <span className="text-5xl font-extrabold tracking-tight text-secondary1 sm:text-[5rem]">Big Updates</span>
                 <span className="text-5xl font-extrabold tracking-tight text-primary sm:text-[5rem]"> Coming Soon!</span>
-            </div>
+            </div> */}
         </div>
     );
 }

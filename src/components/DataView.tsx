@@ -4,11 +4,7 @@ import DateArea from "./chart/MyDateArea"
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import SearchBar from "./SearchBar";
-
-// const DataTypes = ['Air Quality Index', 'CO2 Concentration', 'CO Concentration', 'Temperature', 'Humidity', 'Volatile Organic Compound Concentration'];
-const DataTypes = ['Air Quality Index', 'CO2 Concentration', 'CO Concentration', 'Temperature', 'Humidity', 'VOC Concentration'];
-const DataTypeSymbols = ['aq', 'co2', 'co', 'temp', 'hum', 'voc'];
-const DataTypeUnits = ['AQI', 'ppm', 'ppm', '°C', 'g/m^3', 'ppm'];
+import { DataTypeSymbols, DataTypeUnits, DataTypes } from "~/utils/DataTypes";
 
 export const DataView: React.FC = () => {
     const { data: sessionData } = useSession();

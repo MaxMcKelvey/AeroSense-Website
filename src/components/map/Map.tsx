@@ -34,7 +34,7 @@ const Map: React.FC<{
     const eventHandlers = useMemo(
 		() => ({
 			drag(event: LeafletEvent) {
-                const markerIndex = markerRefs.current.indexOf(event.target);
+                const markerIndex = markerRefs.current.indexOf(event.target as MarkerType<unknown>);
                 const marker = markerRefs.current[markerIndex];
 				if (marker != null) {
 					const markerPos = marker.getLatLng()
@@ -53,7 +53,7 @@ const Map: React.FC<{
 				}
 			},
 			dragend(event: LeafletEvent) {
-				const markerIndex = markerRefs.current.indexOf(event.target);
+				const markerIndex = markerRefs.current.indexOf(event.target as MarkerType<unknown>);
                 const marker = markerRefs.current[markerIndex];
 				if (marker != null) {
 					const markerPos = marker.getLatLng()

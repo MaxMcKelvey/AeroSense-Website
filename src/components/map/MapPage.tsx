@@ -59,7 +59,7 @@ export default function MapPage() {
 	useEffect(() => {
 		if (!devices) return;
 		
-		setParsedDevices(devices.map(device => ({id: device.id, name: device.name, x: 200, y: 100, airQuality: "moderate"})));
+		setParsedDevices(devices.map(device => ({id: device.id, name: device.name, x: 200, y: 100, airQuality: "good"})));
 	}, [devices]);
 
 	return (

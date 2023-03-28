@@ -13,6 +13,29 @@ const markerColors = {
     hazardous: "purple",
 };
 
+const markers = {
+    good: L.divIcon({
+        className: "bg-green-500 rounded-full", // border-2 border-white
+        iconSize: [20, 20],
+    }),
+    moderate: L.divIcon({
+        className: "bg-yellow-500 rounded-full", // border-2 border-white
+        iconSize: [20, 20],
+    }),
+    unhealthy: L.divIcon({
+        className: "bg-orange-500 rounded-full", // border-2 border-white
+        iconSize: [20, 20],
+    }),
+    veryUnhealthy: L.divIcon({
+        className: "bg-red-500 rounded-full", // border-2 border-white
+        iconSize: [20, 20],
+    }),
+    hazardous: L.divIcon({
+        className: "bg-purple-500 rounded-full", // border-2 border-white
+        iconSize: [20, 20],
+    }),
+};
+
 const Map: React.FC<{
     image: {
         id: number,
@@ -69,10 +92,6 @@ const Map: React.FC<{
 					if (markerPos.lng > image.width) {
 						marker.setLatLng(new LatLng(markerPos.lat, image.width));
 					}
-                    // marker.setIcon(L.divIcon({
-                    //     className: `bg-${markerColors[devices[markerIndex]?.airQuality as keyof typeof markerColors]}-500 rounded-full border-2 border-white`,
-                    //     iconSize: [16, 16],
-                    // }));
 					console.log(markerPos, markerIndex, devices[markerIndex]?.id);
 				}
 			},
@@ -102,11 +121,12 @@ const Map: React.FC<{
                         position={[device.y, device.x]}
                         draggable
                         eventHandlers={eventHandlers}
-                        icon={L.divIcon({
-                            // className: `bg-${color}-500 rounded-full border-2 border-white`,
-                            className: `bg-${color}-500 rounded-full`,
-                            iconSize: [16, 16],
-                        })}
+                        // icon={L.divIcon({
+                        //     // className: `bg-${color}-500 rounded-full border-2 border-white`,
+                        //     className: `bg-${color}-500 rounded-full`,
+                        //     iconSize: [16, 16],
+                        // })}
+                        icon={markers[device.airQuality as keyof typeof markers]}
                         ref={(ref) => markerRefs.current[index] = ref}
                     >
                         <Popup>{device.name}</Popup>

@@ -1,8 +1,8 @@
 import { MapContainer, ImageOverlay, Marker, Popup } from "react-leaflet";
 import L, { LatLng, LatLngBoundsLiteral } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { LeafletEvent, DragEndEvent, MarkerOptions, Marker as MarkerType } from "leaflet";
-import { MutableRefObject, Ref, useMemo, useRef } from "react";
+import { LeafletEvent, Marker as MarkerType } from "leaflet";
+import { useMemo, useRef } from "react";
 
 // Set up marker colors based on air quality thresholds
 const markerColors = {
@@ -15,26 +15,47 @@ const markerColors = {
 
 const markers = {
     good: L.divIcon({
-        className: "bg-green-500 rounded-full", // border-2 border-white
+        html: `<div class="bg-green-500 rounded-full w-5 h-5 animate-ping"></div>`,
+        className: `bg-green-500 rounded-full`, // border-2 border-white
         iconSize: [20, 20],
     }),
     moderate: L.divIcon({
-        className: "bg-yellow-500 rounded-full", // border-2 border-white
+        html: `<div class="bg-yellow-500 rounded-full w-5 h-5 animate-ping"></div>`,
+        className: `bg-yellow-500 rounded-full`, // border-2 border-white
         iconSize: [20, 20],
     }),
     unhealthy: L.divIcon({
-        className: "bg-orange-500 rounded-full", // border-2 border-white
+        html: `<div class="bg-orange-500 rounded-full w-5 h-5 animate-ping"></div>`,
+        className: `bg-orange-500 rounded-full`, // border-2 border-white
         iconSize: [20, 20],
     }),
     veryUnhealthy: L.divIcon({
-        className: "bg-red-500 rounded-full", // border-2 border-white
+        html: `<div class="bg-red-500 rounded-full w-5 h-5 animate-ping"></div>`,
+        className: `bg-red-500 rounded-full`, // border-2 border-white
         iconSize: [20, 20],
     }),
     hazardous: L.divIcon({
-        className: "bg-purple-500 rounded-full", // border-2 border-white
+        html: `<div class="bg-purple-500 rounded-full w-5 h-5 animate-ping"></div>`,
+        className: `bg-purple-500 rounded-full`, // border-2 border-white
         iconSize: [20, 20],
     }),
 };
+
+// const makeMarker = (color: string) => {
+//     return L.divIcon({
+//         html: `<div class="bg-${color}-500 rounded-full w-5 h-5 animate-ping"></div>`,
+//         className: `bg-${color}-500 rounded-full`, // border-2 border-white
+//         iconSize: [20, 20],
+//     });
+// };
+
+// const markers = {
+//     good: makeMarker("green"),
+//     moderate: makeMarker("yellow"),
+//     unhealthy: makeMarker("orange"),
+//     veryUnhealthy: makeMarker("red"),
+//     hazardous: makeMarker("purple"),
+// };
 
 const Map: React.FC<{
     image: {
@@ -48,11 +69,30 @@ const Map: React.FC<{
         name: string,
         x?: number,
         y?: number,
-        airQuality: string,
-    }[]
-}> = ({ image, devices }) => {
+        quality?: string,
+    }[],
+    setDevicePosition: (deviceId: string, x: number, y: number) => void,
+}> = ({ image, devices, setDevicePosition }) => {
     const bounds: LatLngBoundsLiteral = [[0, 0], [image.height, image.width]];
     const markerRefs = useRef<Array<MarkerType<unknown> | null>>([]);
+
+    const getFixedPos = (marker: MarkerType<unknown>) => {
+        const markerPos = marker.getLatLng()
+        const fixedPos = new LatLng(markerPos.lat, markerPos.lng);
+        if (markerPos.lat < 0) {
+            fixedPos.lat = 0;
+        }
+        if (markerPos.lat > image.height) {
+            fixedPos.lat = image.height;
+        }
+        if (markerPos.lng < 0) {
+            fixedPos.lng = 0;
+        }
+        if (markerPos.lng > image.width) {
+            fixedPos.lng = image.width;
+        }
+        return fixedPos;
+    };
 
     const eventHandlers = useMemo(
 		() => ({
@@ -60,43 +100,23 @@ const Map: React.FC<{
                 const markerIndex = markerRefs.current.indexOf(event.target as MarkerType<unknown>);
                 const marker = markerRefs.current[markerIndex];
 				if (marker != null) {
-					const markerPos = marker.getLatLng()
-					if (markerPos.lat < 0) {
-						marker.setLatLng(new LatLng(0, markerPos.lng));
-					}
-					if (markerPos.lat > image.height) {
-						marker.setLatLng(new LatLng(image.height, markerPos.lng));
-					}
-					if (markerPos.lng < 0) {
-						marker.setLatLng(new LatLng(markerPos.lat, 0));
-					}
-					if (markerPos.lng > image.width) {
-						marker.setLatLng(new LatLng(markerPos.lat, image.width));
-					}
+                    marker.setLatLng(getFixedPos(marker));
 				}
 			},
 			dragend(event: LeafletEvent) {
 				const markerIndex = markerRefs.current.indexOf(event.target as MarkerType<unknown>);
                 const marker = markerRefs.current[markerIndex];
 				if (marker != null) {
-					const markerPos = marker.getLatLng()
-					if (markerPos.lat < 0) {
-						marker.setLatLng(new LatLng(0, markerPos.lng));
-					}
-					if (markerPos.lat > image.height) {
-						marker.setLatLng(new LatLng(image.height, markerPos.lng));
-					}
-					if (markerPos.lng < 0) {
-						marker.setLatLng(new LatLng(markerPos.lat, 0));
-					}
-					if (markerPos.lng > image.width) {
-						marker.setLatLng(new LatLng(markerPos.lat, image.width));
-					}
-					console.log(markerPos, markerIndex, devices[markerIndex]?.id);
+                    const fixedMarkerPos = getFixedPos(marker);
+					// console.log(markerPos, markerIndex, devices[markerIndex]?.id);
+                    if (devices[markerIndex]?.id) {
+                        setDevicePosition(devices[markerIndex]?.id as string, fixedMarkerPos.lng, fixedMarkerPos.lat);
+                        marker.setLatLng(fixedMarkerPos);
+                    }
 				}
 			},
 		}),
-		[],
+		[devices],
 	);
 
     return (
@@ -113,7 +133,7 @@ const Map: React.FC<{
         >
             <ImageOverlay url={image.path} bounds={bounds} />
             {devices.map((device, index) => {
-                const color = markerColors[device.airQuality as keyof typeof markerColors];
+                // const color = markerColors[device.airQuality as keyof typeof markerColors];
 
                 return (device.y && device.x &&
                     <Marker
@@ -121,12 +141,7 @@ const Map: React.FC<{
                         position={[device.y, device.x]}
                         draggable
                         eventHandlers={eventHandlers}
-                        // icon={L.divIcon({
-                        //     // className: `bg-${color}-500 rounded-full border-2 border-white`,
-                        //     className: `bg-${color}-500 rounded-full`,
-                        //     iconSize: [16, 16],
-                        // })}
-                        icon={markers[device.airQuality as keyof typeof markers]}
+                        icon={markers[device.quality as keyof typeof markers]}
                         ref={(ref) => markerRefs.current[index] = ref}
                     >
                         <Popup>{device.name}</Popup>

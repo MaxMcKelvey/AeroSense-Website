@@ -10,3 +10,108 @@ export const DataTypeUnits = ['AQI', 'ppm', 'ppm', '°C', 'g/m^3', 'ppm'];
 // export const DataTypesShort = ['PM1.0', 'PM2.5', 'PM10.0', 'CO2', 'CO', 'Temp', 'Humidity', 'VOC'];
 // export const DataTypeSymbols = ['pm1', 'pm25', 'pm10', 'co2', 'co', 'temp', 'hum', 'voc'];
 // export const DataTypeUnits = ['µg/m^3', 'µg/m^3', 'µg/m^3', 'ppm', 'ppm', '°C', 'g/m^3', 'ppm'];
+
+// export const SortDate = ['Last 24 Hours', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'Last 365 Days'];
+
+export type DataType = {
+    aq?: number,
+    co2?: number,
+    co?: number,
+    temp?: number,
+    hum?: number,
+    voc?: number,
+    pm1?: number,
+    pm25?: number,
+    pm10?: number,
+};
+
+export type thresholdType = {
+    good: number,
+    moderate: number,
+    unhealthy: number,
+    veryUnhealthy: number,
+    hazardous: number,
+};
+
+export const defaultThresholds = {
+    aq: {
+        good: 50,
+        moderate: 100,
+        unhealthy: 150,
+        veryUnhealthy: 200,
+        hazardous: 300,
+    } satisfies thresholdType,
+    co2: {
+        good: 1000,
+        moderate: 2000,
+        unhealthy: 5000,
+        veryUnhealthy: 10000,
+        hazardous: 20000,
+    } satisfies thresholdType,
+    co: {
+        good: 9,
+        moderate: 35,
+        unhealthy: 70,
+        veryUnhealthy: 140,
+        hazardous: 200,
+    } satisfies thresholdType,
+    temp: {
+        good: 20,
+        moderate: 25,
+        unhealthy: 30,
+        veryUnhealthy: 35,
+        hazardous: 40,
+    } satisfies thresholdType,
+    hum: {
+        good: 40,
+        moderate: 50,
+        unhealthy: 60,
+        veryUnhealthy: 70,
+        hazardous: 80,
+    } satisfies thresholdType,
+    voc: {
+        good: 0.5,
+        moderate: 1,
+        unhealthy: 2,
+        veryUnhealthy: 4,
+        hazardous: 8,
+    } satisfies thresholdType,
+    pm1: {
+        good: 10,
+        moderate: 20,
+        unhealthy: 30,
+        veryUnhealthy: 40,
+        hazardous: 50,
+    } satisfies thresholdType,
+    pm25: {
+        good: 10,
+        moderate: 20,
+        unhealthy: 30,
+        veryUnhealthy: 40,
+        hazardous: 50,
+    } satisfies thresholdType,
+    pm10: {
+        good: 10,
+        moderate: 20,
+        unhealthy: 30,
+        veryUnhealthy: 40,
+        hazardous: 50,
+    } satisfies thresholdType,
+};
+
+// returns the name of the threshold based on the threshold value and the type of data
+export const getNameFromThreshold = (threshold: number, type: string) => {
+    // console.log(defaultThresholds[type as keyof typeof defaultThresholds]);
+    // console.log(type);
+    if (!type) return undefined;
+    if (!defaultThresholds[type as keyof typeof defaultThresholds]) return undefined;
+    // console.log(defaultThresholds[type as keyof typeof defaultThresholds]);
+    // get the keys of the object
+    const keys = Object.keys(defaultThresholds[type as keyof typeof defaultThresholds]);
+
+    // find the first key that is greater than the threshold
+    const index = keys.findIndex((key) => threshold <= defaultThresholds[type as keyof typeof defaultThresholds][key as keyof thresholdType]);
+    // const name = keys[index] ? keys[index] : 'good';
+    // return (keys[index] ? keys[index] : keys[0]) as string;
+    return keys[index] ? keys[index] : undefined;
+};

@@ -1,6 +1,9 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// npx prisma generate
+// npx prisma db push
+
 generator client {
     provider = "prisma-client-js"
 }
@@ -54,6 +57,8 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
+    data          Json?
+    status        UserStatus?
     accounts      Account[]
     sessions      Session[]
     devices       Device[]
@@ -75,6 +80,7 @@ model Device {
     logs       Log[]
     User       User       @relation(fields: [userId], references: [id])
     userId     String
+    info       Json
 
     @@unique([id, userId])
 }
@@ -90,4 +96,11 @@ model Log {
 enum DeviceType {
     MOUNTEDv1
     PERSONALv1
+}
+
+enum UserStatus {
+    ADMIN
+    PAID
+    FREE
+    UNREGISTERED
 }

@@ -6,8 +6,10 @@ import { EditDevicePopup } from "./EditDevicePopup";
 import { useState } from "react";
 import React from "react";
 import { NewDevicePopup } from "./NewDevicePopup";
+import { useRouteGuard } from "~/utils/redirectUtils";
 
 export const DeviceView: React.FC = () => {
+    const [authorized] = useRouteGuard("/purchase");
     const [popupVisible, setPopupVisible] = useState(false);
     const [newDevicePopupVisible, setNewDevicePopupVisible] = useState(false);
     const [editDeviceId, setEditDeviceId] = useState("");

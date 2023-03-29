@@ -41,6 +41,7 @@ export const userClientRouter = createTRPCRouter({
                     name: input.mac_addr,
                     userId: input.userId,
                     deviceType: input.type,
+                    info: {}
                 }
             })
             return "device added"
@@ -138,6 +139,91 @@ export const userClientRouter = createTRPCRouter({
                 ...(log.data as object)
             }));
             return parsedLogs
+        }),
+    // gets the most recent log from each device in the list
+    fetchLatestLogsFromDeviceList: protectedProcedure
+        .input(z.object({ userId: z.string(), deviceIds: z.array(MacAddressType) }))
+        .query(async ({ input, ctx }) => {
+            const logs: Log[] = await ctx.prisma.log.findMany({
+                where: {
+                    deviceId: {
+                        in: input.deviceIds,
+                    },
+                    device: {
+                        userId: input.userId,
+                    },
+                },
+                orderBy: {
+                    datetime: "desc"
+                },
+                take: 1,
+            })
+            const parsedLogs = logs.map(log => ({
+                datetime: log.datetime,
+                deviceId: log.deviceId,
+                ...(log.data as object)
+            }));
+            return parsedLogs
+        }),
+    // gets the most recent log from each device from the user
+    fetchLatestLogs: protectedProcedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input, ctx }) => {
+            // parse and return the most recent log from each device along with the device name and type
+            const devices = await ctx.prisma.device.findMany({
+                where: {
+                    userId: input.userId
+                }
+            })
+            const parsedLogs = await Promise.all(devices.map(async (device) => {
+                const log = await ctx.prisma.log.findFirst({
+                    where: {
+                        deviceId: device.id,
+                    },
+                    orderBy: {
+                        datetime: "desc"
+                    },
+                })
+                return {
+                    deviceName: device.name,
+                    deviceType: device.deviceType,
+                    deviceInfo: device.info,
+                    log: log
+                }
+            }))
+
+            // filter out devices that have no logs
+            // and map the logs to the correct format
+            const filteredLogs = parsedLogs.filter(value => value.log !== null).map(value => {
+                const log = value.log as Log;
+                return {
+                    datetime: log.datetime,
+                    deviceId: log.deviceId,
+                    deviceName: value.deviceName,
+                    deviceType: value.deviceType,
+                    deviceInfo: value.deviceInfo,
+                    data: log.data,
+                }
+            })
+
+            return filteredLogs
+        }),
+    changeDevicePosition: protectedProcedure
+        .input(z.object({ id: MacAddressType, x: z.number(), y: z.number() }))
+        .mutation(async ({ input, ctx }) => {
+            await ctx.prisma.device.update({
+                where: {
+                    id: input.id,
+                },
+
+                data: {
+                    info: {
+                        x: input.x,
+                        y: input.y,
+                    }
+                }
+            })
+            return "device position changed"
         }),
     hello: publicProcedure
         .input(z.object({ text: z.string() }))

@@ -5,14 +5,19 @@ import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import SearchBar from "./SearchBar";
 import { DataTypeSymbols, DataTypeUnits, DataTypes } from "~/utils/DataTypes";
+import { useRouteGuard } from "~/utils/redirectUtils";
 
 export const DataView: React.FC = () => {
     const { data: sessionData } = useSession();
+    const [authorized] = useRouteGuard("/purchase");
     const userId = sessionData?.user?.id ? sessionData.user.id : "";
     const { data: devices } = api.user_client.getAllDevices.useQuery(
         { userId: userId },
         { enabled: sessionData?.user !== undefined },
     );
+    
+    console.log(sessionData);
+
     const parsedDevices = [{label: "All Devices", onClick: () => {
         setSelectedDeviceIds(undefined);
         setSelectedDevices("All Devices");

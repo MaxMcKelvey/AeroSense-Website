@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { RadioGroup } from "./RadioGroup";
-import { DataTypeSymbols, DataTypeUnits, DataTypes, DataTypesShort } from "~/utils/DataTypes";
-import MapPage from "./map/MapPage";
+import { DataTypeSymbols, DataTypeUnits, DataTypes, DataTypesShort, getNameFromThreshold, defaultThresholds } from "~/utils/DataTypes";
+import { MapPage } from "./map/MapPage";
+import { thresholdType } from "~/utils/DataTypes";
+import { useSession } from "next-auth/react";
+import { api } from "~/utils/api";
+import { useRouter } from "next/router";
+import { useRouteGuard } from "~/utils/redirectUtils";
 
 const data = [
     {
@@ -51,13 +56,15 @@ const data = [
 
 export const OverviewView: React.FC = () => {
     const [selected, setSelected] = useState("Overview");
+    const [authorized] = useRouteGuard("/purchase");
+
     return (
         <div className="w-full h-full">
             {/* <h2 className="text-2xl p-5 underline underline-offset-4">Your Month at a Glance</h2> */}
 
             <RadioGroup name="test" values={["Overview", ...DataTypesShort]} selected={selected} onChange={setSelected} />
 
-            <MapPage />
+            <MapPage currentDataType={DataTypeSymbols[DataTypesShort.indexOf(selected)] as string} />
 
             {/* <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 ">
                 <span className="text-5xl font-extrabold tracking-tight text-secondary1 sm:text-[5rem]">Big Updates</span>

@@ -72,7 +72,8 @@ const Map: React.FC<{
         quality?: string,
     }[],
     setDevicePosition: (deviceId: string, x: number, y: number) => void,
-}> = ({ image, devices, setDevicePosition }) => {
+    deviceClickHandler: (deviceId: string) => void,
+}> = ({ image, devices, setDevicePosition, deviceClickHandler }) => {
     const bounds: LatLngBoundsLiteral = [[0, 0], [image.height, image.width]];
     const markerRefs = useRef<Array<MarkerType<unknown> | null>>([]);
 
@@ -115,6 +116,14 @@ const Map: React.FC<{
                     }
 				}
 			},
+            click(event: LeafletEvent) {
+                const markerIndex = markerRefs.current.indexOf(event.target as MarkerType<unknown>);
+                // const marker = markerRefs.current[markerIndex];
+                // console.log("click", devices[markerIndex]?.id as string);
+                if (devices[markerIndex]?.id as string) {
+                    deviceClickHandler(devices[markerIndex]?.id as string);
+                }
+            }
 		}),
 		[devices],
 	);
@@ -123,10 +132,10 @@ const Map: React.FC<{
         <MapContainer
             center={[image.height / 2, image.width / 2]}
             className={`m-10`}
-            style={{ height: (image.height), width: (image.width) }}
+            style={{ height: (500), width: (500) }}
             zoom={0}
             maxBounds={bounds}
-            minZoom={0}
+            minZoom={-1}
             maxZoom={5}
             zoomControl={false}
             crs={L.CRS.Simple}
@@ -144,7 +153,9 @@ const Map: React.FC<{
                         icon={markers[device.quality as keyof typeof markers]}
                         ref={(ref) => markerRefs.current[index] = ref}
                     >
-                        <Popup>{device.name}</Popup>
+                        {/* <Popup
+                            closeOnEscapeKey
+                        >{device.name}</Popup> */}
                     </Marker>
                 );
             })}

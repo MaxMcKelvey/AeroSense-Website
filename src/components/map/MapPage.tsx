@@ -10,13 +10,13 @@ const Map = dynamic(() => import("./Map"), {
 	ssr: false,
 });
 
-export const MapPage: React.FC<{currentDataType: string}> = ({currentDataType}) =>  {
+export const MapPage: React.FC<{ currentDataType: string }> = ({ currentDataType }) => {
 	const { data: sessionData } = useSession();
-    const userId = sessionData?.user?.id ? sessionData.user.id : "";
-    const { data: latestLogs, refetch: refetchLogs } = api.user_client.fetchLatestLogs.useQuery(
-        { userId: userId },
-        { enabled: sessionData?.user !== undefined },
-    );
+	const userId = sessionData?.user?.id ? sessionData.user.id : "";
+	const { data: latestLogs, refetch: refetchLogs } = api.user_client.fetchLatestLogs.useQuery(
+		{ userId: userId },
+		{ enabled: sessionData?.user !== undefined },
+	);
 	const changePos = api.user_client.changeDevicePosition.useMutation();
 	const [parsedDevices, setParsedDevices] = useState<{
 		id: string;
@@ -32,51 +32,52 @@ export const MapPage: React.FC<{currentDataType: string}> = ({currentDataType}) 
 		width: number,
 		height: number
 	} | null>(null);
+	const [selectedDevice, setSelectedDevice] = useState<string | undefined>(undefined);
 
 	const getDataRating = (data: DataType, typeName: string) => {
-        // if (typeName === "Overview") {
+		// if (typeName === "Overview") {
 		if (!typeName) {
 			// console.log("Overview");
-            // const ratings = DataTypes.map(type => {console.log(data, type); return getSpecificDataRating(data, type)});
-            const ratings = DataTypeSymbols.map(type => getSpecificDataRating(data, type));
-            const worstRating = ratings.reduce((worst, rating) => {
+			// const ratings = DataTypes.map(type => {console.log(data, type); return getSpecificDataRating(data, type)});
+			const ratings = DataTypeSymbols.map(type => getSpecificDataRating(data, type));
+			const worstRating = ratings.reduce((worst, rating) => {
 				if (!worst) return rating;
 				if (!rating) return worst;
-                const idx = Object.keys(defaultThresholds.co2).indexOf(rating);
-                const worstIdx = Object.keys(defaultThresholds.co2).indexOf(worst);
+				const idx = Object.keys(defaultThresholds.co2).indexOf(rating);
+				const worstIdx = Object.keys(defaultThresholds.co2).indexOf(worst);
 				// console.log(idx, worstIdx);
-                return idx > worstIdx ? rating : worst;
-            });
+				return idx > worstIdx ? rating : worst;
+			});
 			// console.log(ratings);
 			// console.log(worstRating);
-            return worstRating;
-        }
+			return worstRating;
+		}
 
-        return getSpecificDataRating(data, typeName);
-    }
+		return getSpecificDataRating(data, typeName);
+	}
 
-    const getSpecificDataRating = (data: DataType, typeName: string) => {
-        return getNameFromThreshold(data[typeName as keyof DataType] as number, typeName);
-    }
+	const getSpecificDataRating = (data: DataType, typeName: string) => {
+		return getNameFromThreshold(data[typeName as keyof DataType] as number, typeName);
+	}
 
-    useEffect(() => {
-        // console.log(latestLogs);
-    }, [latestLogs])
+	useEffect(() => {
+		// console.log(latestLogs);
+	}, [latestLogs])
 
 	// useEffect(() => {
-		// const fetchImage = async () => {
-		// 	const response = await fetch("/api/image");
-		// 	if (response.ok) {
-		// 		const imageData = await response.json();
-		// 		setImage(imageData);
-		// 	}
-		// };
-		// fetchImage();
+	// const fetchImage = async () => {
+	// 	const response = await fetch("/api/image");
+	// 	if (response.ok) {
+	// 		const imageData = await response.json();
+	// 		setImage(imageData);
+	// 	}
+	// };
+	// fetchImage();
 	// }, []);
 
 	useEffect(() => {
 		if (!latestLogs) return;
-		
+
 		void setParsedDevices(
 			latestLogs.filter(
 				device => !currentDataType || (device.data && Object.keys(device.data as object).includes(currentDataType))
@@ -90,22 +91,68 @@ export const MapPage: React.FC<{currentDataType: string}> = ({currentDataType}) 
 		);
 	}, [latestLogs, currentDataType]);
 
+	useEffect(() => {
+		const handleEsc = (event: {keyCode: number}) => {
+			if (event.keyCode === 27) {
+				// console.log('Close')
+				setSelectedDevice(undefined);
+			}
+		};
+		window.addEventListener('keydown', handleEsc);
+
+		return () => {
+			window.removeEventListener('keydown', handleEsc);
+		};
+	}, []);
+
 	return (
-		<div>
+		<div className="flex flex-row">
 			{/* {image && <Map image={image} devices={devices ? devices.map(device => ({id: device.id, name: device.name, x: 1, y: 1, airQuality: "good"})) : []} />} */}
 			<Map
-				image={{path: "/blueprint.png", id: 1, filename: "blueprint.png", width: 550, height: 500}}
+				image={{ path: "/blueprint.png", id: 1, filename: "blueprint.png", width: 550, height: 500 }}
 				devices={parsedDevices}
 				setDevicePosition={(id, x, y) => {
-					// Todo: Update device position in database
 					console.log(id, "x", x, "y", y);
 					// changePos.mutate({id: id, x: x, y: y});
-					void changePos.mutateAsync({id: id, x: x, y: y}).then(() => {
+					void changePos.mutateAsync({ id: id, x: x, y: y }).then(() => {
 						void refetchLogs();
-						console.log("Position changed");
+						// console.log("Position changed");
 					});
 				}}
+				deviceClickHandler={(id) => {
+					// console.log(id);
+					setSelectedDevice(id);
+				}}
 			/>
+			{selectedDevice &&
+				<div className="flex flex-col w-60 break-words mt-10 p-5 rounded-2xl bg-neutral2 shadow-xl h-[500px]">
+					<div className="text-xl">
+						{latestLogs?.find(device => device.deviceId == selectedDevice)?.deviceName}
+					</div>
+					{/* <div>
+						{`Most Recent Log: ${(JSON.stringify(latestLogs?.find(device => device.deviceId == selectedDevice)))}`}
+					</div> */}
+					<ul>
+						{latestLogs?.find(
+							device => device.deviceId == selectedDevice
+						)?.data && Object.keys(
+							latestLogs?.find(
+								device => device.deviceId == selectedDevice
+							)?.data as object
+						).map((key, index) => {
+							return (
+								<li key={index}>
+									{key}: {latestLogs?.find(
+										device => device.deviceId == selectedDevice
+									)?.data && (latestLogs?.find(
+										device => device.deviceId == selectedDevice
+									)?.data as DataType)[key as keyof DataType]}
+								</li>
+							);
+						})}
+					</ul>
+				</div>
+			}
 		</div>
 	);
 }

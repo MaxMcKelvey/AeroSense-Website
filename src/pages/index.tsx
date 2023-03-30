@@ -102,10 +102,16 @@ const Home: NextPage = () => {
 
           <div className="p-10"></div>
 
-          <div className="text-2xl font-bold tracking-tight text-secondary1 text-center sm:text-[2rem]">How it works?</div>
+          <div className="text-2xl font-bold tracking-tight text-secondary1 text-center sm:text-[2rem]">What is AeroSense?</div>
           <div className="p-5"></div>
-          <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 relative h-[80%] snap-center">
-            <span className="text-lg tracking-tight sm:text-[2rem]">AeroSense is a smart environmental monitoring system that enables targeted HVAC optimization.</span>
+          <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 relative h-[80%] snap-center text-lg">
+            {/* <span className="tracking-tight sm:text-[2rem]">AeroSense is a smart environmental monitoring system that enables targeted HVAC optimization.</span> */}
+            <ul className="list-disc flex flex-col gap-6">
+              <li className="tracking-tight sm:text-[2rem]">AeroSense is a smart environmental monitoring system that enables targeted HVAC optimization</li>
+              <li className="tracking-tight sm:text-[2rem]">Utilizes LocSense to provide dynamic indoor localization of sensors</li>
+              <li className="tracking-tight sm:text-[2rem]">Providing full indoor environmental mapping coverage</li>
+              <li className="tracking-tight sm:text-[2rem]">A modular sensor platform for scalable networks</li>
+            </ul>
           </div>
 
           <div className="p-10"></div>

@@ -50,9 +50,9 @@ export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
     // );
 
     const { data: data, refetch: refetchData } = isDemo ? api.demo_client.fetchDeviceLogs.useQuery(
-        { userId: userId },
+        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
     ) : api.user_client.fetchDeviceLogs.useQuery(
-        { userId: userId },
+        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
         { enabled: sessionData?.user !== undefined },
     );
 

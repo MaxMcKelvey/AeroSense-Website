@@ -155,6 +155,7 @@ const Map: React.FC<{
                     >
                         {/* <Popup
                             closeOnEscapeKey
+                            autoClose={true}
                         >{device.name}</Popup> */}
                     </Marker>
                 );

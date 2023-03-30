@@ -91,6 +91,22 @@ export const MapPage: React.FC<{ currentDataType: string }> = ({ currentDataType
 		);
 	}, [latestLogs, currentDataType]);
 
+	const setDevicePosition = (id: string, x: number, y: number) => {
+		// console.log(id, x, y);
+		const newDevices = parsedDevices.map(device => {
+			if (device.id === id) {
+				return { ...device, x: x, y: y };
+			}
+			return device;
+		});
+		setParsedDevices(newDevices);
+
+		void changePos.mutateAsync({ id: id, x: x, y: y }).then(() => {
+			void refetchLogs();
+			// console.log("Position changed");
+		});
+	};	
+
 	useEffect(() => {
 		const handleEsc = (event: {keyCode: number}) => {
 			if (event.keyCode === 27) {
@@ -100,9 +116,9 @@ export const MapPage: React.FC<{ currentDataType: string }> = ({ currentDataType
 		};
 		window.addEventListener('keydown', handleEsc);
 
-		return () => {
-			window.removeEventListener('keydown', handleEsc);
-		};
+		// return () => {
+		// 	window.removeEventListener('keydown', handleEsc);
+		// };
 	}, []);
 
 	return (
@@ -114,10 +130,7 @@ export const MapPage: React.FC<{ currentDataType: string }> = ({ currentDataType
 				setDevicePosition={(id, x, y) => {
 					console.log(id, "x", x, "y", y);
 					// changePos.mutate({id: id, x: x, y: y});
-					void changePos.mutateAsync({ id: id, x: x, y: y }).then(() => {
-						void refetchLogs();
-						// console.log("Position changed");
-					});
+					void setDevicePosition(id, x, y);
 				}}
 				deviceClickHandler={(id) => {
 					// console.log(id);
@@ -151,6 +164,11 @@ export const MapPage: React.FC<{ currentDataType: string }> = ({ currentDataType
 							);
 						})}
 					</ul>
+					<div className="p-1 m-auto"></div>
+					<div className="">Measured At:</div>
+					<div>
+						{latestLogs?.find(device => device.deviceId == selectedDevice)?.datetime.toLocaleString()}
+					</div>
 				</div>
 			}
 		</div>

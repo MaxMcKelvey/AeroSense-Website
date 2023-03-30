@@ -73,6 +73,9 @@ const Home: NextPage = () => {
               Optimizing HVAC systems with Smart Environmental Monitoring
             {/* </div> */}
           </span>
+          <Link className="text-2xl px-5 font-bold tracking-tight text-primary sm:text-[1.5rem] text-center max-w-[80%]" href="https://linkedin.com/company/popular-engineering">
+            See us on LinkedIn →
+          </Link>
           {/* </h1> */}
           <Link
             className="p-10 rounded font-semibold"

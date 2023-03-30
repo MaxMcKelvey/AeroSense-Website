@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const DashboardNavbar: React.FC = () => {
     const { data: sessionData } = useSession();
@@ -13,10 +14,13 @@ export const DashboardNavbar: React.FC = () => {
             <div className="p-1"></div>
             <div className="place-self-center">AeroSense</div> */}
             <Link
-                className="z-10 flex flex-row justify-start"
+                className="z-10 flex flex-row justify-start place-items-center"
                 href="/"
             >
-                <div className="m-2 w-10 bg-primary rounded-md"></div>
+                {/* <div className="m-2 w-10 bg-primary rounded-md"></div> */}
+                <div className="w-10">
+                    <Image src="/favicon.ico" alt="aerosense logo" width={50} height={50} />
+                </div>
                 <div className="p-1"></div>
                 <div className="place-self-center">AeroSense</div>
             </Link>

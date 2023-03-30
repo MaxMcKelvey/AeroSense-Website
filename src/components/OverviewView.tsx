@@ -54,9 +54,9 @@ const data = [
     }
 ]
 
-export const OverviewView: React.FC = () => {
+export const OverviewView: React.FC<{ isDemo: boolean }> = ({ isDemo }) => {
     const [selected, setSelected] = useState("Overview");
-    const [authorized] = useRouteGuard("/purchase");
+    const [authorized] = !isDemo ? useRouteGuard("/purchase") : [null];
 
     return (
         <div className="w-full h-full">
@@ -64,7 +64,7 @@ export const OverviewView: React.FC = () => {
 
             <RadioGroup name="test" values={["Overview", ...DataTypesShort]} selected={selected} onChange={setSelected} />
 
-            <MapPage currentDataType={DataTypeSymbols[DataTypesShort.indexOf(selected)] as string} />
+            <MapPage currentDataType={DataTypeSymbols[DataTypesShort.indexOf(selected)] as string} isDemo={isDemo} />
 
             {/* <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 ">
                 <span className="text-5xl font-extrabold tracking-tight text-secondary1 sm:text-[5rem]">Big Updates</span>

@@ -7,11 +7,18 @@ import SearchBar from "./SearchBar";
 import { DataTypeSymbols, DataTypeUnits, DataTypes } from "~/utils/DataTypes";
 import { useRouteGuard } from "~/utils/redirectUtils";
 
-export const DataView: React.FC = () => {
+export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
     const { data: sessionData } = useSession();
-    const [authorized] = useRouteGuard("/purchase");
+    const [authorized] = !isDemo ? useRouteGuard("/purchase") : [null];
     const userId = sessionData?.user?.id ? sessionData.user.id : "";
-    const { data: devices } = api.user_client.getAllDevices.useQuery(
+    // const { data: devices } = api[isDemo ? "demo_client" : "user_client"].getAllDevices.useQuery(
+    //     { userId: userId },
+    //     { enabled: sessionData?.user !== undefined },
+    // );
+
+    const { data: devices } = isDemo ? api.demo_client.getAllDevices.useQuery(
+        { userId: userId },
+    ) : api.user_client.getAllDevices.useQuery(
         { userId: userId },
         { enabled: sessionData?.user !== undefined },
     );
@@ -37,8 +44,15 @@ export const DataView: React.FC = () => {
     const [parsedEndDate, setParsedEndDate] = useState<string>("");
     const [datetimeParamString, setDatetimeParamString] = useState<string | undefined>(undefined);
     const dataTypes = DataTypes.map(type => ({ label: type, onClick: () => setDataName(type) }))
-    const { data: data, refetch: refetchData } = api.user_client.fetchDeviceLogs.useQuery(
-        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
+    // const { data: data, refetch: refetchData } = api[isDemo ? "user_client" : "user_client"].fetchDeviceLogs.useQuery(
+    //     { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
+    // );
+
+    const { data: data, refetch: refetchData } = isDemo ? api.demo_client.fetchDeviceLogs.useQuery(
+        { userId: userId },
+    ) : api.user_client.fetchDeviceLogs.useQuery(
+        { userId: userId },
+        { enabled: sessionData?.user !== undefined },
     );
 
     const getDataType = (name: string) => {

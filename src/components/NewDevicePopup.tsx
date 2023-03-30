@@ -9,8 +9,8 @@ const filters: SerialPortFilter[] = [
     { 'usbVendorId': 0x2E8A }, // RP2040 Boards!
 ];
 
-export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }> = (
-    { hidden, setHidden }
+export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void, isDemo: boolean }> = (
+    { hidden, setHidden, isDemo }
 ) => {
     // const [deviceId, setDeviceId] = useState("");
     // const [deviceType, setDeviceType] = useState<DeviceType>(DeviceType.MOUNTEDv1);
@@ -18,7 +18,7 @@ export const NewDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void }
     const [password, setPassword] = useState("");
     const { data: sessionData } = useSession();
     const userId = sessionData?.user?.id ? sessionData.user.id : "";
-    const createDevice = api.user_client.registerDevice.useMutation();
+    const createDevice = api[isDemo ? "demo_client" : "user_client"].registerDevice.useMutation();
 
     const handleSubmit = (event: { preventDefault: () => void }) => {
         event.preventDefault();

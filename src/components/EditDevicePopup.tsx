@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 
-export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void, deviceId: string, deviceName: string }> = (
-    { hidden, setHidden, deviceId, deviceName }
+export const EditDevicePopup: React.FC<{ hidden: boolean, setHidden: () => void, deviceId: string, deviceName: string, isDemo: boolean }> = (
+    { hidden, setHidden, deviceId, deviceName, isDemo }
 ) => {
     const [name, setName] = useState(deviceName);
-    const nameDevice = api.user_client.nameDevice.useMutation();
-    const deleteDevice = api.user_client.deleteDevice.useMutation();
+    const nameDevice = api[isDemo ? "demo_client" : "user_client"].nameDevice.useMutation();
+    const deleteDevice = api[isDemo ? "demo_client" : "user_client"].deleteDevice.useMutation();
 
     const handleSubmit = (event: {preventDefault: () => void}) => {
         event.preventDefault();

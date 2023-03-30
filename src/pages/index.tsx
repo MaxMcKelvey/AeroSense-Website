@@ -92,7 +92,8 @@ const Home: NextPage = () => {
           <div className="p-5"></div>
           <div className="flex flex-col items-center justify-center gap-6 px-4 py-16 relative h-[80%] snap-center text-lg">
             <ul className="list-disc flex flex-col gap-6">
-              <li className="tracking-tight sm:text-[2rem]">HVAC systems correspond to 20% of the total energy consumption in the world</li>
+              {/* <li className="tracking-tight sm:text-[2rem]">HVAC systems correspond to 20% of the total energy consumption in the world</li> */}
+              <li className="tracking-tight sm:text-[2rem]">AeroSense provides a solution for commercial building to reduce the energy consumption of their HVAC systems</li>
               <li className="tracking-tight sm:text-[2rem]">HVAC systems are the largest energy consumers in commercial buildings</li>
               <li className="tracking-tight sm:text-[2rem]">HVAC systems are responsible for up to 40% of the energy consumption in commercial buildings</li>
               <li className="tracking-tight sm:text-[2rem]">{"HVAC systems typically contribute between 30% to 40% of a commercial building's total carbon emissions."}</li>

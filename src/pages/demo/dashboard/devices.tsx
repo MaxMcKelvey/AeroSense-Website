@@ -13,7 +13,7 @@ const Devices: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="">
-				<DashboardLayout isDemo={false}><DeviceView isDemo={false}/></DashboardLayout>
+				<DashboardLayout isDemo={true}><DeviceView isDemo={true}/></DashboardLayout>
 			</main>
 		</>
 	);

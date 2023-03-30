@@ -1,8 +1,32 @@
 import Link from "next/link";
 import { Cog6ToothIcon, Cog8ToothIcon } from '@heroicons/react/24/outline'
 
-export const DashboardSidebar: React.FC = () => {
-
+export const DashboardSidebar: React.FC<{isDemo: boolean}> = ({isDemo}) => {
+    if (isDemo) {
+        return (
+            <div className="w-[200px] h-full border-r-4 border-neutral1">
+                <div className="mx-5 flex flex-col h-full">
+                    <div className="p-1"></div>
+                    <ViewLinkComponent name="Overview" href="/demo/dashboard" />
+                    <ViewLinkComponent name="Data" href="/demo/dashboard/data" />
+                    <ViewLinkComponent name="Blueprints" href="/demo/dashboard/blueprints" />
+                    <ViewLinkComponent name="Alerts" href="/demo/dashboard/alerts" />
+                    <ViewLinkComponent name="Devices" href="/demo/dashboard/devices" />
+                    {/* <ViewLinkComponent name="Maps" href="/dashboard/maps" /> */}
+                    <div className="p-1 m-auto"></div>
+                    {/* <ViewLinkComponent name="Settings" href="/dashboard/settings" /> */}
+                    <Link className="p-1 px-5 text-slate-800 hover:text-slate-900 rounded-md hover:bg-neutral2 flex content-space-between place-items-center" href={"/demo/dashboard/settings"}>
+                        <div>{"Settings"}</div>
+                        {/* <div></div> */}
+                        <div className="p-1 m-auto"></div>
+                        <Cog6ToothIcon className="w-5 h-5" />
+                    </Link>
+                    <div className="p-1"></div>
+                </div>
+            </div>
+        );
+    }
+    
     return (
         <div className="w-[200px] h-full border-r-4 border-neutral1">
             <div className="mx-5 flex flex-col h-full">

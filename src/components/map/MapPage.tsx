@@ -10,14 +10,18 @@ const Map = dynamic(() => import("./Map"), {
 	ssr: false,
 });
 
-export const MapPage: React.FC<{ currentDataType: string }> = ({ currentDataType }) => {
+export const MapPage: React.FC<{ currentDataType: string, isDemo: boolean }> = ({ currentDataType, isDemo }) => {
+	console.log(isDemo);
 	const { data: sessionData } = useSession();
 	const userId = sessionData?.user?.id ? sessionData.user.id : "";
-	const { data: latestLogs, refetch: refetchLogs } = api.user_client.fetchLatestLogs.useQuery(
+	const { data: latestLogs, refetch: refetchLogs } = isDemo ? api.demo_client.fetchLatestLogs.useQuery(
+		{ userId: userId },
+	) : api.user_client.fetchLatestLogs.useQuery(
 		{ userId: userId },
 		{ enabled: sessionData?.user !== undefined },
 	);
-	const changePos = api.user_client.changeDevicePosition.useMutation();
+
+	const changePos = api[isDemo ? "demo_client" : "user_client"].changeDevicePosition.useMutation();
 	const [parsedDevices, setParsedDevices] = useState<{
 		id: string;
 		name: string;

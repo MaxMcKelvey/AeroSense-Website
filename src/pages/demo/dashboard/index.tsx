@@ -15,7 +15,7 @@ const Dashboard: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="">
-				<DashboardLayout isDemo={false}><OverviewView isDemo={false}/></DashboardLayout>
+				<DashboardLayout isDemo={true}><OverviewView isDemo={true}/></DashboardLayout>
 			</main>
 		</>
 	);

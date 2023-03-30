@@ -13,7 +13,7 @@ const Data: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="">
-				<DashboardLayout isDemo={false}><DataView isDemo={false}/></DashboardLayout>
+				<DashboardLayout isDemo={true}><DataView isDemo={true}/></DashboardLayout>
 			</main>
 		</>
 	);

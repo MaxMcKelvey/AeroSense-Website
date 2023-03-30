@@ -7,7 +7,8 @@ export const HomeNavbar: React.FC = () => {
     const username = sessionData?.user?.name ? sessionData.user.name : "User";
     const center_element = sessionData?.user?.name ?
         <div className="p-1">{`Hello, ${sessionData.user.name}`}</div>
-        : <button className="p-1 px-8" >Check out our Demo →</button>;
+        : <Link href="/demo/dashboard"><button className="p-1 px-8" >Check out our Demo →</button></Link>;
+        // : <button className="p-1 px-8" >Check out our Demo →</button>;
 
     return (
         <div className="w-full h-[50px] bg-neutral1 flex flex-row justify-start">

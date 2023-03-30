@@ -11,7 +11,7 @@ const Map = dynamic(() => import("./Map"), {
 });
 
 export const MapPage: React.FC<{ currentDataType: string, isDemo: boolean }> = ({ currentDataType, isDemo }) => {
-	console.log(isDemo);
+	// console.log(isDemo);
 	const { data: sessionData } = useSession();
 	const userId = sessionData?.user?.id ? sessionData.user.id : "";
 	const { data: latestLogs, refetch: refetchLogs } = isDemo ? api.demo_client.fetchLatestLogs.useQuery(
@@ -129,7 +129,7 @@ export const MapPage: React.FC<{ currentDataType: string, isDemo: boolean }> = (
 		<div className="flex flex-row">
 			{/* {image && <Map image={image} devices={devices ? devices.map(device => ({id: device.id, name: device.name, x: 1, y: 1, airQuality: "good"})) : []} />} */}
 			<Map
-				image={{ path: "/blueprint.png", id: 1, filename: "blueprint.png", width: 550, height: 500 }}
+				image={{ path: "/blueprint.jpeg", id: 1, filename: "blueprint.jpeg", width: 1000, height: 500 }}
 				devices={parsedDevices}
 				setDevicePosition={(id, x, y) => {
 					console.log(id, "x", x, "y", y);

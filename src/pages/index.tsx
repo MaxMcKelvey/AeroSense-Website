@@ -95,7 +95,7 @@ const Home: NextPage = () => {
               <li className="tracking-tight sm:text-[2rem]">HVAC systems correspond to 20% of the total energy consumption in the world</li>
               <li className="tracking-tight sm:text-[2rem]">HVAC systems are the largest energy consumers in commercial buildings</li>
               <li className="tracking-tight sm:text-[2rem]">HVAC systems are responsible for up to 40% of the energy consumption in commercial buildings</li>
-              <li className="tracking-tight sm:text-[2rem]">HVAC systems typically contribute between 30% to 40% of a commercial building's total carbon emissions.</li>
+              <li className="tracking-tight sm:text-[2rem]">{"HVAC systems typically contribute between 30% to 40% of a commercial building's total carbon emissions."}</li>
             </ul>
           </div>
 

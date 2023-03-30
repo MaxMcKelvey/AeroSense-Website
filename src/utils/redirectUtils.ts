@@ -24,7 +24,7 @@ export function useRouteGuard(redirect_url: string) {
             router.events.off('routeChangeStart', hideContent);
             router.events.off('routeChangeComplete', authCheck);
         }
-
+        // react-hooks/rules-of-hooks
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [status]);
 

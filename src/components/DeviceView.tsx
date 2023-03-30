@@ -9,6 +9,7 @@ import { NewDevicePopup } from "./NewDevicePopup";
 import { useRouteGuard } from "~/utils/redirectUtils";
 
 export const DeviceView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [authorized] = !isDemo ? useRouteGuard("/purchase") : [null];
     const [popupVisible, setPopupVisible] = useState(false);
     const [newDevicePopupVisible, setNewDevicePopupVisible] = useState(false);

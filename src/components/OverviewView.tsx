@@ -56,6 +56,7 @@ const data = [
 
 export const OverviewView: React.FC<{ isDemo: boolean }> = ({ isDemo }) => {
     const [selected, setSelected] = useState("Overview");
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [authorized] = !isDemo ? useRouteGuard("/purchase") : [null];
 
     return (

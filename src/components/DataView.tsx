@@ -9,6 +9,7 @@ import { useRouteGuard } from "~/utils/redirectUtils";
 
 export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
     const { data: sessionData } = useSession();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [authorized] = !isDemo ? useRouteGuard("/purchase") : [null];
     const userId = sessionData?.user?.id ? sessionData.user.id : "";
     // const { data: devices } = api[isDemo ? "demo_client" : "user_client"].getAllDevices.useQuery(

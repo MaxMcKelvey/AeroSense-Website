@@ -39,7 +39,7 @@ export const demoClientRouter = createTRPCRouter({
         }),
     nameDevice: publicProcedure
         .input(z.object({ id: MacAddressType, name: z.string() }))
-        .mutation(async ({ input, ctx }) => {
+        .mutation(({ input, ctx }) => {
             // const test = await ctx.prisma.device.update({
             //     where: {
             //         id: input.id,
@@ -53,7 +53,7 @@ export const demoClientRouter = createTRPCRouter({
         }),
     deleteDevice: publicProcedure
         .input(z.object({ id: MacAddressType }))
-        .mutation(async ({ input, ctx }) => {
+        .mutation(({ input, ctx }) => {
             // await ctx.prisma.log.deleteMany({
             //     where: {
             //         deviceId: input.id
@@ -70,7 +70,7 @@ export const demoClientRouter = createTRPCRouter({
     deleteDeviceLogs: publicProcedure
         .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string() }))
         // .input(z.object({ deviceId: MacAddressType, datetimeParams: z.string(), dataParams: z.any() }))
-        .mutation(async ({ input, ctx }) => {
+        .mutation(({ input, ctx }) => {
             // const { count } = await ctx.prisma.log.deleteMany({
             //     where: {
             //         deviceId: input.deviceId,
@@ -178,7 +178,7 @@ export const demoClientRouter = createTRPCRouter({
         }),
     changeDevicePosition: publicProcedure
         .input(z.object({ id: MacAddressType, x: z.number(), y: z.number() }))
-        .mutation(async ({ input, ctx }) => {
+        .mutation(({ input, ctx }) => {
             // await ctx.prisma.device.update({
             //     where: {
             //         id: input.id,

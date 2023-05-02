@@ -1,15 +1,15 @@
 // Description: This file contains the data types that are used in the app.
 // old types:
-export const DataTypes = ['Air Quality Index', 'CO2 Concentration', 'CO Concentration', 'Temperature', 'Humidity', 'VOC Concentration'];
-export const DataTypesShort = ['AQI', 'CO2', 'CO', 'Temp', 'Humidity', 'VOC'];
-export const DataTypeSymbols = ['aq', 'co2', 'co', 'temp', 'hum', 'voc'];
-export const DataTypeUnits = ['AQI', 'ppm', 'ppm', '°C', 'g/m^3', 'ppm'];
+// export const DataTypes = ['Air Quality Index', 'CO2 Concentration', 'CO Concentration', 'Temperature', 'Humidity', 'VOC Concentration'];
+// export const DataTypesShort = ['AQI', 'CO2', 'CO', 'Temp', 'Humidity', 'VOC'];
+// export const DataTypeSymbols = ['aq', 'co2', 'co', 'temp', 'hum', 'voc'];
+// export const DataTypeUnits = ['AQI', 'ppm', 'ppm', '°C', 'g/m^3', 'kOhms'];
 
 // new types:
-// export const DataTypes = ['PM1.0', 'PM2.5', 'PM10.0', 'CO2 Concentration', 'CO Concentration', 'Temperature', 'Humidity', 'VOC Concentration'];
-// export const DataTypesShort = ['PM1.0', 'PM2.5', 'PM10.0', 'CO2', 'CO', 'Temp', 'Humidity', 'VOC'];
-// export const DataTypeSymbols = ['pm1', 'pm25', 'pm10', 'co2', 'co', 'temp', 'hum', 'voc'];
-// export const DataTypeUnits = ['µg/m^3', 'µg/m^3', 'µg/m^3', 'ppm', 'ppm', '°C', 'g/m^3', 'ppm'];
+export const DataTypes = ['PM 2.5', 'PM 10.0', 'PM 100', 'CO2 Concentration', 'Temperature', 'Humidity', 'VOC Concentration'];
+export const DataTypesShort = ['PM 2.5', 'PM 10.0', 'PM 100', 'CO2', 'Temp', 'Humidity', 'VOC'];
+export const DataTypeSymbols = ['pm25', 'pm10', 'pm100', 'co2', 'temp', 'hum', 'voc'];
+export const DataTypeUnits = ['µg/m^3', 'µg/m^3', 'µg/m^3', 'ppm', '°C', 'g/m^3', 'kOhms'];
 
 // export const SortDate = ['Last 24 Hours', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'Last 365 Days'];
 
@@ -20,9 +20,9 @@ export type DataType = {
     temp?: number,
     hum?: number,
     voc?: number,
-    pm1?: number,
     pm25?: number,
     pm10?: number,
+    pm100?: number,
 };
 
 export type thresholdType = {
@@ -76,13 +76,6 @@ export const defaultThresholds = {
         veryUnhealthy: 4,
         hazardous: 8,
     } satisfies thresholdType,
-    pm1: {
-        good: 10,
-        moderate: 20,
-        unhealthy: 30,
-        veryUnhealthy: 40,
-        hazardous: 50,
-    } satisfies thresholdType,
     pm25: {
         good: 10,
         moderate: 20,
@@ -91,6 +84,13 @@ export const defaultThresholds = {
         hazardous: 50,
     } satisfies thresholdType,
     pm10: {
+        good: 10,
+        moderate: 20,
+        unhealthy: 30,
+        veryUnhealthy: 40,
+        hazardous: 50,
+    } satisfies thresholdType,
+    pm100: {
         good: 10,
         moderate: 20,
         unhealthy: 30,

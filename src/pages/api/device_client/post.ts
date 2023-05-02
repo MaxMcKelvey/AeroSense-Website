@@ -12,6 +12,9 @@ const InputType = z.object({ id: z.string(), posts: z.array(z.object({
         temp: z.optional(z.number()),
         hum: z.optional(z.number()),
         voc: z.optional(z.number()),
+        pm25: z.optional(z.number()),
+        pm10: z.optional(z.number()),
+        pm100: z.optional(z.number()),
     })
 }))})
 

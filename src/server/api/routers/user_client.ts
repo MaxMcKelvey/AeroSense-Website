@@ -8,6 +8,7 @@ import {
     publicProcedure,
     protectedProcedure,
 } from "~/server/api/trpc";
+import { DataType } from "~/utils/DataTypes";
 
 const MacAddressType = z.string().regex(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/);
 
@@ -136,7 +137,7 @@ export const userClientRouter = createTRPCRouter({
             const parsedLogs = logs.map(log => ({
                 datetime: log.datetime,
                 deviceId: log.deviceId,
-                ...(log.data as object)
+                ...(log.data as DataType)
             }));
             return parsedLogs
         }),

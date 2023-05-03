@@ -72,11 +72,12 @@ export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
         if (!data) return;
 
         setParsedData(
-            data.map(datum => ({
+            data.filter(datum => getDataType(dataName) in datum).map(datum => ({
                 // date: datum.date, val: (
                 // date: datum.datetime.toLocaleString().replace(/\//g, '-').replace(/,|\sPM|\sAM/g, ''), val: (
                 date: datum.datetime, val: (
-                    getDataType(dataName) in datum ? datum[getDataType(dataName) as keyof typeof datum] : 0
+                    // getDataType(dataName) in datum ? datum[getDataType(dataName) as keyof typeof datum] : 0
+                    datum[getDataType(dataName) as keyof typeof datum]
                 ) as number
             }))
         );

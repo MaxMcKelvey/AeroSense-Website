@@ -141,6 +141,65 @@ export const userClientRouter = createTRPCRouter({
             }));
             return parsedLogs
         }),
+    fetchDeviceLogsMonometric: protectedProcedure
+        .input(z.object({ key: z.string(), ct: z.optional(z.number()), userId: z.string(), deviceIds: z.optional(z.array(MacAddressType)), datetimeParams: z.optional(z.string()) }))
+        .query(async ({ input, ctx }) => {
+            const datetimeParams: undefined | { gt?: Date, lt?: Date, gte?: Date, lte?: Date}
+                = input.datetimeParams ? JSON.parse(input.datetimeParams) as { gt?: Date, lt?: Date, gte?: Date, lte?: Date} : undefined;
+
+            const logs: Log[] = await ctx.prisma.log.findMany({
+                where: {
+                    deviceId: {
+                        in: input.deviceIds,
+                    },
+                    device: {
+                        userId: input.userId,
+                    },
+                    datetime: {
+                        gte: datetimeParams?.gte ? new Date(datetimeParams?.gte) : undefined,
+                        lt: datetimeParams?.lt ? new Date(datetimeParams?.lt) : undefined,
+                    }
+                    // data: input.dataParams,
+                }
+            })
+            const parsedLogs = logs.map(log => ({
+                datetime: log.datetime,
+                deviceId: log.deviceId,
+                [input.key]: log.data ? (log.data as DataType)[input.key as keyof DataType] : undefined
+            })).filter(log => log.datetime.getTime() > (new Date("01-01-2015")).getTime())
+               .filter(log => log[input.key] !== undefined);
+
+            const ct = input.ct ? input.ct : 600;
+            console.log(parsedLogs.length)
+
+            if (parsedLogs.length < ct) {
+                return parsedLogs;
+            }
+
+            const filteredLogs = [];
+            const minDate = datetimeParams?.gte ? new Date(datetimeParams?.gte) : parsedLogs.reduce((acc, curr) => acc.datetime.getTime() < curr.datetime.getTime() ? acc : curr).datetime;
+            const maxDate = datetimeParams?.lt ? new Date(datetimeParams?.lt) : parsedLogs.reduce((acc, curr) => acc.datetime.getTime() > curr.datetime.getTime() ? acc : curr).datetime;
+            if (!minDate || !maxDate) {
+                return parsedLogs;
+            }
+            const step = (maxDate.getTime() - minDate.getTime()) / ct;
+            for (let i = minDate.getTime(); i < maxDate.getTime(); i += step) {
+                const filtered = parsedLogs.filter(log => log.datetime.getTime() >= i && log.datetime.getTime() < i + step);
+                if (filtered.length > 0) {
+                    const smoothedVal = filtered.reduce((acc, curr) => acc + (curr[input.key] as number), 0) / filtered.length;
+                    if (isNaN(smoothedVal) || smoothedVal === 0) {
+                        continue;
+                    }
+                    filteredLogs.push({
+                        datetime: new Date(i),
+                        [input.key]: smoothedVal,
+                    })
+                }
+            }
+            console.log(minDate, maxDate, step, filteredLogs.length)
+
+            return filteredLogs;
+        }),
     // gets the most recent log from each device in the list
     fetchLatestLogsFromDeviceList: protectedProcedure
         .input(z.object({ userId: z.string(), deviceIds: z.array(MacAddressType) }))

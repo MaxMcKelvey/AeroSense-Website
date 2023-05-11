@@ -4,7 +4,7 @@ import DateArea from "./chart/MyDateArea"
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import SearchBar from "./SearchBar";
-import { DataTypeSymbols, DataTypeUnits, DataTypes } from "~/utils/DataTypes";
+import { DataType, DataTypeSymbols, DataTypeUnits, DataTypes } from "~/utils/DataTypes";
 import { useRouteGuard } from "~/utils/redirectUtils";
 
 export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
@@ -49,12 +49,26 @@ export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
     //     { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
     // );
 
-    const { data: data, refetch: refetchData } = isDemo ? api.demo_client.fetchDeviceLogs.useQuery(
-        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
-    ) : api.user_client.fetchDeviceLogs.useQuery(
-        { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
+    const { data: data, refetch: refetchData } = isDemo ? api.demo_client.fetchDeviceLogsMonometric.useQuery(
+        {
+            userId: userId,
+            deviceIds: selectedDeviceIds,
+            datetimeParams: datetimeParamString,
+            key: DataTypeSymbols[DataTypes.indexOf(dataName)] as string,
+        },
+    ) : api.user_client.fetchDeviceLogsMonometric.useQuery(
+        {
+            userId: userId,
+            deviceIds: selectedDeviceIds,
+            datetimeParams: datetimeParamString,
+            key: DataTypeSymbols[DataTypes.indexOf(dataName)] as string,
+        },
         { enabled: sessionData?.user !== undefined },
     );
+    // ) : api.user_client.fetchDeviceLogs.useQuery(
+    //     { userId: userId, deviceIds: selectedDeviceIds, datetimeParams: datetimeParamString },
+    //     { enabled: sessionData?.user !== undefined },
+    // );
 
     const getDataType = (name: string) => {
         const idx = DataTypes.indexOf(name);
@@ -72,7 +86,7 @@ export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
         if (!data) return;
 
         setParsedData(
-            data.filter(datum => getDataType(dataName) in datum).map(datum => ({
+            (data as [{ datetime: Date; key: number }]).filter(datum => getDataType(dataName) in datum).map(datum => ({
                 // date: datum.date, val: (
                 // date: datum.datetime.toLocaleString().replace(/\//g, '-').replace(/,|\sPM|\sAM/g, ''), val: (
                 date: datum.datetime, val: (
@@ -87,6 +101,10 @@ export const DataView: React.FC<{ isDemo: boolean }> = ({isDemo}) => {
         setDatetimeParamString(JSON.stringify({gte: parsedStartDate, lt: parsedEndDate}));
         void refetchData();
     }, [parsedStartDate, parsedEndDate])
+
+    useEffect(() => {
+        void refetchData();
+    }, [selectedDeviceIds])
 
     return (
         <div className="w-full h-full p-10" >

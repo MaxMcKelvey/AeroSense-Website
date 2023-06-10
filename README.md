@@ -2,7 +2,7 @@
 
 ## How do I get started?
 
-1. Fork the website repo at ...
+1. Fork this website repo
 2. Clone the repo to your local machine
 3. Know how to write a website in Next.js / tailwindcss
 

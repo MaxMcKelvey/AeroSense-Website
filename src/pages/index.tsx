@@ -67,7 +67,7 @@ const Home: NextPage = () => {
           {/* Big <span className="text-[hsl(280,100%,70%)]">Updates</span> Coming Soon! */}
           <span className="text-5xl font-bold tracking-tight text-secondary1 sm:text-[5rem] snap-center">Introducing</span>
           <span className="text-5xl font-extrabold tracking-tight text-primary sm:text-[5rem]">AeroSense</span>
-          <span className="rounded font-semibold">Max McKelvey's research project under Sep Makhsous</span>
+          <span className="rounded font-semibold">{"Max McKelvey's research project under Sep Makhsous"}</span>
           <div className="p-5"></div>
           <span className="text-2xl px-5 font-bold tracking-tight text-secondary1 sm:text-[2rem] text-center max-w-[80%]">
             {/* <div className="flex justify-center place-content-center place-items-center w-auto"> */}
